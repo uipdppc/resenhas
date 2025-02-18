@@ -372,3 +372,36 @@ function gotowhatsapp() {
 
   
 <div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body></html>
+
+
+<script>
+const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
+
+async function salvarDados(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const dados = Object.fromEntries(formData.entries());
+
+    const { data, error } = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify(dados),
+    }).then(res => res.json());
+
+    if (error) {
+        alert("Erro ao salvar: " + error.message);
+    } else {
+        alert("Dados salvos com sucesso!");
+        event.target.reset();
+    }
+}
+
+// Captura o evento de submissão do formulário
+document.querySelector("form").addEventListener("submit", salvarDados);
+</script>
