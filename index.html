@@ -333,6 +333,11 @@ function gotowhatsapp() {
        value="Gerar e Salvar Resenha" 
        onclick="processarFormulario(event, this.form, 'resultado')">
 
+<div class="form-group">
+    <button type="button" class="btnSubmit btn-block" onclick="resetFormulario()">🧹 Limpar Formulário</button>
+</div>
+
+
                   </div>
                 </form>
 <br>
@@ -378,12 +383,11 @@ function gotowhatsapp() {
 const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
 
-async function salvarDados(form) {
-	
-    event.preventDefault(); // Impede o recarregamento da página
+async function salvarDados(event) {
+    event.preventDefault(); // Evita o recarregamento da página
 
-    const formData = new FormData(form); // Obtém os dados do formulário
-    const dados = Object.fromEntries(formData.entries()); // Converte para objeto JSON
+    const formData = new FormData(event.target);
+    const dados = Object.fromEntries(formData.entries());
 
     // 🔍 Verificar se todos os campos estão preenchidos
     for (let key in dados) {
@@ -399,7 +403,6 @@ async function salvarDados(form) {
         dados.data = `${ano}-${mes}-${dia}`;
     }
 
-    // 🔄 Enviar os dados ao Supabase
     try {
         let response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
             method: "POST",
@@ -417,16 +420,14 @@ async function salvarDados(form) {
 
         alert("✅ Dados salvos com sucesso!");
 
-        // 🔗 Copiar o resultado para a área de transferência ANTES de resetar
+        // 🔗 Copiar o resultado para a área de transferência
         CopyToClipboard('resultado');
 
-        // 🧹 Resetar o formulário depois de tudo
-        setTimeout(() => {
-            event.target.reset();
-        }, 1000); // Pequeno delay para o usuário visualizar a informação
     } catch (error) {
         alert(`⚠️ Erro ao salvar: ${error.message}`);
     }
+}
+
 
 // 🔹 Nova função para processar o formulário e copiar para a área de transferência
 function processarFormulario(event, form, resultadoId) {
@@ -448,5 +449,9 @@ function CopyToClipboard(resultadoId) {
     document.execCommand('copy');
     document.body.removeChild(textarea);
     alert("📋 Texto copiado para a área de transferência!");
+}
+function resetFormulario() {
+    document.querySelector("form").reset();
+    alert("🔄 Formulário resetado!");
 }
 </script>
