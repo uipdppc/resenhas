@@ -270,7 +270,7 @@ function gotowhatsapp() {
             <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
             <div class="row register-form">
               <div class="col-md-12">
-                <form autocomplete="off">
+                <form onsubmit="salvarDados(event)">
                   <div class="form-group">
                     <select class="form-control" id="type" name="departamento">
     			<option value="Departamento">Selecione o Departamento</option>
@@ -329,7 +329,10 @@ function gotowhatsapp() {
                   </div>
 
                   <div class="form-group">
-                    <input type="button" name="gerador" class="btnSubmit btn-block" value="Gerar Resenha" onclick="preencher(this.form);CopyToClipboard('resultado');" wfd-id="id5">
+                   <input type="button" class="btnSubmit btn-block" 
+       value="Gerar e Salvar Resenha" 
+       onclick="processarFormulario(event, this.form, 'resultado')">
+
                   </div>
                 </form>
 <br>
@@ -370,38 +373,71 @@ function gotowhatsapp() {
 
 
 
-  
-<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body></html>
-
-
 <script>
+// 🛡️ Use apenas a anon public key
 const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
 
-async function salvarDados(event) {
-    event.preventDefault();
+async function salvarDados(form) {
+    const formData = new FormData(form); // Obtém os dados do formulário
+    const dados = Object.fromEntries(formData.entries()); // Converte para objeto JSON
 
-    const formData = new FormData(event.target);
-    const dados = Object.fromEntries(formData.entries());
+    // 🔍 Verificar se todos os campos estão preenchidos
+    for (let key in dados) {
+        if (!dados[key]) {
+            alert(`O campo "${key}" está vazio!`);
+            return;
+        }
+    }
 
-    const { data, error } = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
-        },
-        body: JSON.stringify(dados),
-    }).then(res => res.json());
+    // 🛠️ Formatar data para o padrão YYYY-MM-DD antes de enviar
+    if (dados.data.includes("/")) {
+        const [dia, mes, ano] = dados.data.split("/");
+        dados.data = `${ano}-${mes}-${dia}`;
+    }
 
-    if (error) {
-        alert("Erro ao salvar: " + error.message);
-    } else {
-        alert("Dados salvos com sucesso!");
-        event.target.reset();
+    // 🔄 Enviar os dados ao Supabase
+    try {
+        let response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            },
+            body: JSON.stringify(dados),
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao salvar no banco de dados");
+        }
+
+        alert("✅ Dados salvos com sucesso!");
+        form.reset(); // 🧹 Limpar o formulário após envio
+    } catch (error) {
+        alert(`⚠️ Erro ao salvar: ${error.message}`);
     }
 }
 
-// Captura o evento de submissão do formulário
-document.querySelector("form").addEventListener("submit", salvarDados);
+// 🔹 Nova função para processar o formulário e copiar para a área de transferência
+function processarFormulario(event, form, resultadoId) {
+    event.preventDefault(); // Evita recarregar a página
+    preencher(form); // Preenche os dados antes de salvar
+    CopyToClipboard(resultadoId); // Copia o texto para a área de transferência
+    salvarDados(form); // Salva no banco
+}
+
+// 🔹 Função para copiar conteúdo para a área de transferência
+function CopyToClipboard(resultadoId) {
+    var textarea = document.createElement('textarea');
+    textarea.id = 'temp_element';
+    textarea.style.height = 0;
+    document.body.appendChild(textarea);
+    textarea.value = document.getElementById(resultadoId).innerText;
+    var selector = document.querySelector('#temp_element');
+    selector.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert("📋 Texto copiado para a área de transferência!");
+}
 </script>
