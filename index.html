@@ -1,0 +1,374 @@
+<!-- Desenvolvido por Marcos Matos e Vinicius Coelho 2022 -->
+
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GERADOR DE RESENHAS ONLINE</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" integrity="sha512-LT9fy1J8pE4Cy6ijbg96UkExgOjCqcxAC7xsnv+mLJxSvftGVmmc236jlPTZXPcBRQcVOWoK1IJhb1dAjtb4lQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+ <!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6QHDQW2J6H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6QHDQW2J6H');
+</script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">    </script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js" integrity="sha512-s5u/JBtkPg+Ff2WEr49/cJsod95UgLHbC00N/GglqdQuLnYhALncz8ZHiW/LxDRGduijLKzeYb7Aal9h3codZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://trentrichardson.com/examples/timepicker/jquery-ui-sliderAccess.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+
+<script>
+        $(function() {
+            $( "#datepicker" ).datetimepicker({
+        dateFormat: 'dd/mm/yy',
+	timeFormat: 'HH:mm',
+	addSliderAccess: true,
+        sliderAccessArgs: { touchonly: false },
+	timeOnlyTitle: 'Escolha o horário',
+	timeText: 'Horário',
+	hourText: 'Horas',
+	minuteText: 'Minutos',
+	currentText: 'Agora',
+	closeText: 'Fechar',
+        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+});
+        });
+
+$(document).ready(function () {
+    $("#type").change(function () {
+        var val = $(this).val();
+        if (val == "*DECAP*") {
+            $("#seccional2").html("<option value=''>Selecione a Seccional</option><option value='*1ª SECCIONAL*'>1ª SECCIONAL</option><option value='*2ª SECCIONAL*'>2ª SECCIONAL</option><option value='*3ª SECCIONAL*'>3ª SECCIONAL</option><option value='*4ª SECCIONAL*'>4ª SECCIONAL</option><option value='*5ª SECCIONAL*'>5ª SECCIONAL</option><option value='*6ª SECCIONAL*'>6ª SECCIONAL</option><option value='*7ª SECCIONAL*'>7ª SECCIONAL</option><option value='*8ª SECCIONAL*'>8ª SECCIONAL</option>");
+        } else if (val == "*DEINTER-1*") {
+            $("#seccional2").html("<option value=''>Selecione a Seccional</option><option value='*DEL.SEC.S.JOSE DOS CAMPOS*'>DEL.SEC.S.JOSE DOS CAMPOS</option>");
+        } else if (val == "*DEINTER-6*") {
+            $("#seccional2").html("<option value=''>Selecione a Seccional</option><option value='*DEIC - SANTOS*'>DEIC - SANTOS</option><option value='*DEL.SEC. ITANHAEM*'>DEL.SEC. ITANHAEM</option><option value='*DEL.SEC. JACUPIRANGA*'>DEL.SEC. JACUPIRANGA</option><option value='*DEL.SEC. PRAIA GRANDE*'>DEL.SEC. PRAIA GRANDE</option><option value='*DEL.SEC. REGISTRO*'>DEL.SEC. REGISTRO</option><option value='*DEL.SEC. SANTOS*'>DEL.SEC. SANTOS</option>");
+        } else if (val == "*DEIC*") {
+            $("#seccional2").html("<option value=''>Selecione a Divisão</option><option value='*DISCCPAT*'>DISCCPAT</option><option value='*DIVECAR*'>DIVECAR</option><option value='*DIG*'>DIG</option><option value='*DCCIBER*'>DCCIBER</option>");
+        } else if (val == "*DPPC*") {
+            $("#seccional2").html("<option value=''>Selecione a Divisão</option><option value='*DIV.INV.CRIMES CONTRA CONSUMIDOR*'>DIV.INV.CRIMES CONTRA CONSUMIDOR</option><option value='*DIV.INV.CRIMES CONTRA SAÚDE*'>DIV.INV.CRIMES CONTRA SAÚDE</option><option value='*DIV.INV.CRIMES CONTRA MEIO AMBIENTE*'>DIV.INV.CRIMES CONTRA MEIO AMBIENTE</option><option value='*DIV.INV.CRIMES CONTRA FAZENDA*'>DIV.INV.CRIMES CONTRA FAZENDA</option><option value='*DIV.INV.CRIMES CONTRA ADMINISTRAÇÃO*'>DIV.INV.CRIMES CONTRA ADMINISTRAÇÃO</option><option value='*DIV.PRODUTOS CONTROLADOS*'>DIV.PRODUTOS CONTROLADOS</option>");
+        }
+    });
+});
+
+$(document).ready(function () {
+    $("#seccional2").change(function () {
+        var val = $(this).val();
+	  if (val == "*1ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP*'>1º DP</option><option value='*2º DP*'>2º DP</option><option value='*3º DP*'>3º DP</option><option value='*4º DP*'>4º DP</option><option value='*5º DP*'>5º DP</option><option value='*6º DP*'>6º DP</option><option value='*8º DP*'>8º DP</option><option value='*12º DP*'>12º DP</option><option value='*77º DP*'>77º DP</option><option value='*78º DP*'>78º DP</option><option value='*1ª DDM*'>1ª DDM</option><option value='*CERCO - 1ª SEC*'>CERCO - 1ª SEC</option>");
+        } else if (val == "*2ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*16º DP*'>16º DP</option><option value='*17º DP*'>17º DP</option><option value='*26º DP*'>26º DP</option><option value='*27º DP*'>27º DP</option><option value='*35º DP*'>35º DP</option><option value='*36º DP*'>36º DP</option><option value='*83º DP*'>83º DP</option><option value='*95º DP*'>95º DP</option><option value='*96º DP*'>96º DP</option><option value='*97º DP*'>97º DP</option><option value='*2ª DDM*'>2ª DDM</option><option value='*CERCO - 2ª SEC*'>CERCO - 2ª SEC</option>");
+        } else if (val == "*3ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*07º DP*'>07º DP</option><option value='*14º DP*'>14º DP</option><option value='*15º DP*'>15º DP</option><option value='*23º DP*'>23º DP</option><option value='*33º DP*'>33º DP</option><option value='*34º DP*'>34º DP</option><option value='*37º DP*'>37º DP</option><option value='*46º DP*'>46º DP</option><option value='*51º DP*'>51º DP</option><option value='*75º DP*'>75º DP</option><option value='*87º DP*'>87º DP</option><option value='*89º DP*'>89º DP</option><option value='*91º DP*'>91º DP</option><option value='*93º DP*'>93º DP</option><option value='*3ª DDM*'>3ª DDM</option><option value='*9ª DDM*'>9ª DDM</option><option value='*CERCO - 3ª SEC*'>CERCO - 3ª SEC</option>");
+        } else if (val == "*4ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*09º DP*'>09º DP</option><option value='*13º DP*'>13º DP</option><option value='*19º DP*'>19º DP</option><option value='*20º DP*'>20º DP</option><option value='*28º DP*'>28º DP</option><option value='*38º DP*'>38º DP</option><option value='*39º DP*'>39º DP</option><option value='*40º DP*'>40º DP</option><option value='*45º DP*'>45º DP</option><option value='*72º DP*'>72º DP</option><option value='*73º DP*'>73º DP</option><option value='*74º DP*'>74º DP</option><option value='*90º DP*'>90º DP</option><option value='*4ª DDM*'>4ª DDM</option><option value='*CERCO - 4ª SEC*'>CERCO - 4ª SEC</option>");
+        } else if (val == "*5ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*10º DP*'>10º DP</option><option value='*18º DP*'>18º DP</option><option value='*21º DP*'>21º DP</option><option value='*29º DP*'>29º DP</option><option value='*30º DP*'>30º DP</option><option value='*31º DP*'>31º DP</option><option value='*42º DP*'>42º DP</option><option value='*52º DP*'>52º DP</option><option value='*56º DP*'>56º DP</option><option value='*57º DP*'>57º DP</option><option value='*58º DP*'>58º DP</option><option value='*81º DP*'>81º DP</option><option value='*5ª DDM*'>5ª DDM</option><option value='*CERCO - 5ª SEC*'>CERCO - 5ª SEC</option>");
+        } else if (val == "*6ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*11º DP*'>11º DP</option><option value='*25º DP*'>25º DP</option><option value='*43º DP*'>43º DP</option><option value='*47º DP*'>47º DP</option><option value='*48º DP*'>48º DP</option><option value='*80º DP*'>80º DP</option><option value='*85º DP*'>85º DP</option><option value='*92º DP*'>92º DP</option><option value='*98º DP*'>98º DP</option><option value='*99º DP*'>99º DP</option><option value='*100º DP*'>100º DP</option><option value='*101º DP*'>101º DP</option><option value='*102º DP*'>102º DP</option><option value='*3ª DDM*'>6ª DDM</option><option value='*CERCO - 6ª SEC*'>CERCO - 6ª SEC</option>");
+        } else if (val == "*7ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*22º DP*'>22º DP</option><option value='*24º DP*'>24º DP</option><option value='*32º DP*'>32º DP</option><option value='*50º DP*'>59º DP</option><option value='*62º DP*'>62º DP</option><option value='*63º DP*'>63º DP</option><option value='*64º DP*'>64º DP</option><option value='*65º DP*'>65º DP</option><option value='*67º DP*'>67º DP</option><option value='*68º DP*'>68º DP</option><option value='*103º DP*'>103º DP</option><option value='*7ª DDM*'>7ª DDM</option><option value='*CERCO - 7ª SEC*'>CERCO - 7ª SEC</option>");
+        } else if (val == "*8ª SECCIONAL*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*41º DP*'>41º DP</option><option value='*44º DP*'>44º DP</option><option value='*49º DP*'>49º DP</option><option value='*53º DP*'>53º DP</option><option value='*54º DP*'>54º DP</option><option value='*55º DP*'>55º DP</option><option value='*66º DP*'>66º DP</option><option value='*69º DP*'>69º DP</option><option value='*70º DP*'>70º DP</option><option value='*8ª DDM*'>8ª DDM</option><option value='*CERCO - 8ª SEC*'>CERCO - 8ª SEC</option>");
+        } else if (val == "*DEIC - SANTOS*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DIG*'>1ª DIG</option><option value='*2ª DISE*'>2ª DISE</option><option value='*3ª DIH*'>3ª DIH</option>");
+        } else if (val == "*DEL.SEC. ITANHAEM*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP - ITANHAEM*'>1º DP - ITANHAEM</option><option value='*2º DP - ITANHAEM*'>2º DP - ITANHAEM</option><option value='*3º DP - ITANHAEM*'>3º DP - ITANHAEM</option><option value='*1º DP - MONGAGUA*'>1º DP - MONGAGUA</option><option value='*2º DP - MONGAGUA*'>2º DP - MONGAGUA</option><option value='*1º DP - PERUÍBE*'>1º DP - PERUÍBE</option><option value='*DDM - ITANHAÉM*'>DDM - ITANHAÉM</option><option value='*DDM - MOMGAGUÁ*'>DDM - MOMGAGUÁ</option><option value='*DDM - PERUÍBE*'>DDM - PERUÍBE</option><option value='*DEL.POL.ITARIRI*'>DEL.POL.ITARIRI</option><option value='*DEL.POL.MONGAGUA*'>DEL.POL.MONGAGUA</option><option value='*DEL.POL.PEDRO DE TOLEDO*'>DEL.POL.PEDRO DE TOLEDO</option><option value='*DEL.POL.PERUÍBE*'>DEL.POL.PERUÍBE</option><option value='*DIG - ITANHAÉM*'>DIG - ITANHAÉM</option><option value='*DISE - ITANHAÉM*'>DISE - ITANHAÉM</option>");
+        } else if (val == "*DEL.SEC. JACUPIRANGA*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP - JACUPIRANGA*'>1º DP - JACUPIRANGA</option><option value='*2º DP - JACUPIRANGA*'>2º DP - JACUPIRANGA</option><option value='*DEL.POL.BARRA DO TURVO*'>DEL.POL.BARRA DO TURVO</option><option value='*DEL.POL.CAJATI*'>DEL.POL.CAJATI</option><option value='*DEL.POL.CANANEIA*'>DEL.POL.CANANEIA</option><option value='*DEL.POL.ELDORADO*'>DEL.POL.ELDORADO</option><option value='*DEL.POL.IPORANGA*'>DEL.POL.IPORANGA</option><option value='*DEL.POL.PARIQUERA-AÇU*'>DEL.POL.PARIQUERA-AÇU</option><option value='*DDM - JACUPIRANGA*'>DDM - JACUPIRANGA</option><option value='*DIG - JACUPIRANGA*'>DIG - JACUPIRANGA</option><option value='*DISE - JACUPIRANGA*'>DISE - JACUPIRANGA</option>");
+        } else if (val == "*DEL.SEC. PRAIA GRANDE*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP - PRAIA GRANDE*'>1º DP - PRAIA GRANDE</option><option value='*2º DP - PRAIA GRANDE*'>2º DP - PRAIA GRANDE</option><option value='*3º DP - PRAIA GRANDE*'>3º DP - PRAIA GRANDE</option><option value='*1º DP - SÃO VICENTE*'>1º DP - SÃO VICENTE</option><option value='*2º DP - SÃO VICENTE*'>2º DP - SÃO VICENTE</option><option value='*3º DP - SÃO VICENTE*'>3º DP - SÃO VICENTE</option><option value='*4º DP - SÃO VICENTE*'>4º DP - SÃO VICENTE</option><option value='*DIG - PRAIA GRANDE*'>DIG - PRAIA GRANDE</option><option value='*DISE - PRAIA GRANDE*'>DISE - PRAIA GRANDE</option><option value='*DDM - SÃO VICENTE*'>DDM - SÃO VICENTE</option><option value='*DDM - PRAIA GRANDE*'>DDM - PRAIA GRANDE</option>");
+        } else if (val == "*DEL.SEC. REGISTRO*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP - IGUAPE*'>1º DP - IGUAPE</option><option value='*1º DP - REGISTRO*'>1º DP - REGISTRO</option><option value='*2º DP - REGISTRO*'>2º DP - REGISTRO</option><option value='*DEL.POL.IGUAPE*'>DEL.POL.IGUAPE</option><option value='*DEL.POL.ILHA COMPRIDA*'>DEL.POL.ILHA COMPRIDA</option><option value='*DEL.POL.JUQUIA*'>DEL.POL.JUQUIA</option><option value='*DEL.POL.MIRACATU*'>DEL.POL.MIRACATU</option><option value='*DEL.POL.SETE BARRAS*'>DEL.POL.SETE BARRAS</option><option value='*DIG - REGISTRO*'>DIG - REGISTRO</option><option value='*DISE - REGISTRO*'>DISE - REGISTRO</option><option value='*DDM - REGISTRO*'>DDM - REGISTRO</option>");
+        } else if (val == "*DEL.SEC. SANTOS*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1º DP - CUBATÃO*'>1º DP - CUBATÃO</option><option value='*2º DP - CUBATÃO*'>2º DP - CUBATÃO</option><option value='*3º DP - CUBATÃO*'>3º DP - CUBATÃO</option><option value='*1º DP - GUARUJÁ*'>1º DP - GUARUJÁ</option><option value='*2º DP - GUARUJÁ*'>2º DP - GUARUJÁ</option><option value='*1º DP - SANTOS*'>1º DP - SANTOS</option><option value='*2º DP - SANTOS*'>2º DP - SANTOS</option><option value='*3º DP - SANTOS*'>3º DP - SANTOS</option><option value='*4º DP - SANTOS*'>4º DP - SANTOS</option><option value='*5º DP - SANTOS*'>5º DP - SANTOS</option><option value='*7º DP - SANTOS*'>7º DP - SANTOS</option><option value='*DDM - CUBATÃO*'>DDM - CUBATÃO</option><option value='*DDM - GUARUJÁ*'>DDM - GUARUJÁ</option><option value='*DDM - SANTOS*'>DDM - SANTOS</option><option value='*DEL.POL.BERTIOGA*'>DEL.POL.BERTIOGA</option><option value='*DEL.POL.CUBATÃO*'>DEL.POL.CUBATÃO</option><option value='*DEL.POL.GUARUJÁ*'>DEL.POL.GUARUJÁ</option><option value='*DEL.PORTO SANTOS*'>DEL.PORTO SANTOS</option><option value='*DEL.PROTEÇÃO IDOSO - SANTOS*'>DEL.PROTEÇÃO IDOSO - SANTOS</option><option value='*DIJU - SANTOS*'>DIJU - SANTOS</option>");
+        } else if (val == "*DISCCPAT*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DISCCPAT*'>1ª DISCCPAT</option><option value='*2ª DISCCPAT*'>2ª DISCCPAT</option><option value='*3ª DISCCPAT*'>3ª DISCCPAT</option><option value='*4ª DISCCPAT*'>4ª DISCCPAT</option><option value='*5ª DISCCPAT*'>5ª DISCCPAT</option><option value='*6ª DISCCPAT*'>6ª DISCCPAT</option>");
+        } else if (val == "*DIVECAR*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DIVECAR*'>1ª DIVECAR</option><option value='*2ª DIVECAR*'>2ª DIVECAR</option><option value='*3ª DIVECAR*'>3ª DIVECAR</option><option value='*4ª DIVECAR*'>4ª DIVECAR</option>");
+        } else if (val == "*DIG*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DIG*'>1ª DIG</option><option value='*2ª DIG*'>2ª DIG</option><option value='*3ª DIG*'>3ª DIG</option>");
+        } else if (val == "*DCCIBER*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DCCIBER*'>1ª DCCIBER</option><option value='*2ª DCCIBER*'>2ª DCCIBER</option><option value='*3ª DCCIBER*'>3ª DCCIBER</option><option value='*4ª DCCIBER*'>4ª DCCIBER</option>");
+        } else if (val == "*DEL.SEC.S.JOSE DOS CAMPOS*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*01º D.P. S.JOSE DOS CAMPOS*'>01º D.P. S.JOSE DOS CAMPOS</option><option value='*02º D.P. S.JOSE DOS CAMPOS*'>02º D.P. S.JOSE DOS CAMPOS</option><option value='*03º D.P. S.JOSE DOS CAMPOS*'>03º D.P. S.JOSE DOS CAMPOS</option><option value='*04º D.P. S.JOSE DOS CAMPOS*'>04º D.P. S.JOSE DOS CAMPOS</option><option value='*05º D.P. S.JOSE DOS CAMPOS*'>05º D.P. S.JOSE DOS CAMPOS</option><option value='*05º D.P. S.JOSE DOS CAMPOS*'>05º D.P. S.JOSE DOS CAMPOS</option><option value='*06º D.P. S.JOSE DOS CAMPOS*'>06º D.P. S.JOSE DOS CAMPOS</option><option value='*07º D.P. S.JOSE DOS CAMPOS*'>07º D.P. S.JOSE DOS CAMPOS</option><option value='*08º D.P. S.JOSE DOS CAMPOS*'>08º D.P. S.JOSE DOS CAMPOS</option><option value='*DDM SAO JOSE DOS CAMPOS*'>DDM SAO JOSE DOS CAMPOS</option><option value='*DEL.POL.CAÇAPAVA*'>DEL.POL.CAÇAPAVA</option><option value='*DEL.POL.JAMBEIRO*'>DEL.POL.JAMBEIRO</option><option value='*DEL.POL.MONTEIRO LOBATO*'>DEL.POL.MONTEIRO LOBATO</option>");
+        } else if (val == "*DIV.INV.CRIMES CONTRA CONSUMIDOR*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DELEGACIA*'>1ª DELEGACIA</option><option value='*2ª DELEGACIA*'>2ª DELEGACIA</option>");
+        } else if (val == "*DIV.INV.CRIMES CONTRA SAÚDE*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DELEGACIA*'>1ª DELEGACIA</option><option value='*2ª DELEGACIA*'>2ª DELEGACIA</option>");
+        } else if (val == "*DIV.INV.CRIMES CONTRA MEIO AMBIENTE*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DELEGACIA*'>1ª DELEGACIA</option><option value='*2ª DELEGACIA*'>2ª DELEGACIA</option>");
+        } else if (val == "*DIV.INV.CRIMES CONTRA FAZENDA*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DELEGACIA*'>1ª DELEGACIA</option><option value='*2ª DELEGACIA*'>2ª DELEGACIA</option><option value='*3ª DELEGACIA*'>3ª DELEGACIA</option>");
+        } else if (val == "*DIV.INV.CRIMES CONTRA ADMINISTRAÇÃO*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*1ª DELEGACIA*'>1ª DELEGACIA</option><option value='*2ª DELEGACIA*'>2ª DELEGACIA</option><option value='*3ª DELEGACIA*'>3ª DELEGACIA</option><option value='*4ª DELEGACIA*'>4ª DELEGACIA</option>");
+        } else if (val == "*DIV.PRODUTOS CONTROLADOS*") {
+            $("#delegacia2").html("<option value=''>Selecione a Delegacia</option><option value='*DEL.INV.PROD.CONTROLADOS*'>DEL.INV.PROD.CONTROLADOS</option>");
+        } 
+    });
+});
+
+
+   </script>
+
+<script>
+
+function gotowhatsapp() {
+
+
+    var departamento = document.getElementById("departamento").innerHTML;
+    var seccional = document.getElementById("seccional").innerHTML;
+    var delegacia = document.getElementById("delegacia").innerHTML;
+    var rdo = document.getElementById("rdo").innerHTML;
+    var natureza = document.getElementById("natureza").innerHTML;
+    var ocorrencia = document.getElementById("ocorrencia").innerHTML;
+    var envolvidos = document.getElementById("envolvidos").innerHTML;
+    var localfato = document.getElementById("localfato").innerHTML;
+    var historico = document.getElementById("historico").innerHTML;
+
+    var url = "https://api.whatsapp.com/send/?phone&text=" 
+    + '*Polícia Civil*' + "%0a" + "%0a"
+    + departamento + "%0a" + "%0a"
+    + seccional + "%0a" + "%0a"
+    + delegacia + "%0a" + "%0a"
+    + rdo + "%0a" + "%0a"
+    + natureza + "%0a" + "%0a"
+    + ocorrencia + "%0a" + "%0a"
+    + envolvidos + "%0a" + "%0a"
+    + localfato + "%0a" + "%0a"
+    + "```"+ historico +"```";
+
+
+    window.open(url, '_blank').focus()
+
+}
+</script>
+
+<script>
+    function copyText(){
+       var copyText = 
+     document.getElementById("resultado").select();
+     document.execCommand('copy');
+    }
+    function preencher(f) {
+      document.getElementById("departamento").innerHTML = f.departamento.value;
+      document.getElementById("seccional").innerHTML = f.seccional.value;
+      document.getElementById("delegacia").innerHTML = f.delegacia.value;
+      document.getElementById("rdo").innerHTML = "RDO: " + f.rdo.value + " | " + "Data: " + f.data.value;
+      document.getElementById("natureza").innerHTML = f.natureza.value;
+      document.getElementById("ocorrencia").innerHTML = f.ocorrencia.value;
+      document.getElementById("envolvidos").innerHTML = f.envolvidos.value;
+      document.getElementById("localfato").innerHTML = f.localfato.value;
+      document.getElementById("historico").innerHTML = f.historico.value;
+      }
+
+      //if(f.gerador.checked == true) {}
+
+	function CopyToClipboard (resultado) {
+	  // Create a new textarea element and give it id='temp_element'
+	  var textarea = document.createElement('textarea')
+	  textarea.id = 'temp_element'
+	  // Optional step to make less noise on the page, if any!
+	  textarea.style.height = 0
+	  // Now append it to your page somewhere, I chose <body>
+	  document.body.appendChild(textarea)
+	  // Give our textarea a value of whatever inside the div of id=containerid
+	  textarea.value = document.getElementById(resultado).innerText
+	  // Now copy whatever inside the textarea to clipboard
+	  var selector = document.querySelector('#temp_element')
+	  selector.select()
+	  document.execCommand('copy')
+
+
+  // Remove the textarea
+  document.body.removeChild(textarea)
+}
+
+
+    </script> 
+
+    <style>
+      .register .nav-tabs .nav-link:hover {
+        border: none;
+      }
+      .text-align {
+        margin-top: -0%;
+        margin-bottom: 15%;
+        padding: -4%;
+        margin-left: 30%;
+      }
+      .form-new {
+        margin-right: 10%;
+        margin-left: 10%;
+	
+      }
+      .register-heading {
+  	position: relative;
+  	width: 360px;
+  	margin: auto;
+	margin-bottom: 5%;
+        color: #000000;
+
+      }
+      .register-heading h1 {
+        margin-left: 20%;
+        margin-bottom: 10%;
+        color: #e9ecef;
+      }
+	
+      .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-clip: padding-box;
+    border: 2px solid #ced4da;
+    border-radius: 1.25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+      }
+
+      .register {
+        #background: -webkit-linear-gradient(left, #055a4f, #00c6ff);
+	background-image: url("https://www.policiacivil.sp.gov.br/portal/imagens/bg_barra_circulos.jpg");
+  	margin: auto;
+        padding: 1%;
+        border-radius: 2.5rem;
+
+      }
+      .btnSubmit {
+        width: 50%;
+        border-radius: 1rem;
+        padding: 1.5%;
+        color: #fff;
+        background-color: #000000;
+        border: none;
+        cursor: pointer;
+        margin-right: 6%;
+        color: rgb(246, 246, 252);
+        margin-top: 4%;
+      }
+    </style>
+  <meta id="dcngeagmmhegagicpcmpinaoklddcgon"></head>
+  <body>
+    <div class="container register">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tab-pane fade show active text-align form-new" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
+            <div class="row register-form">
+              <div class="col-md-12">
+                <form autocomplete="off">
+                  <div class="form-group">
+                    <select class="form-control" id="type" name="departamento">
+    			<option value="Departamento">Selecione o Departamento</option>
+    			<option value="*DECAP*">DECAP</option>
+			<option value="*DEINTER-1*">DEINTER-1</option>
+    			<option value="*DEINTER-6*">DEINTER-6</option>
+			<option value="*DEIC*">DEIC</option>
+			<option value="*DPPC*">DPPC</option>
+                    </select>
+                  <select class="form-control" name="seccional" id="seccional2">
+    			<option value="">Selecione a Seccional</option>
+                    </select>
+			<select class="form-control" name="delegacia" id="delegacia2">
+    			<option value="">Selecione a Unidade</option>
+			</select>
+
+			</div>
+
+                  <div class="form-group">
+		 <input type="text" class="form-control" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="" wfd-id="id0">
+                  </div>
+
+                 <div class="form-group">
+                    <input type="text" name="data" id="datepicker" class="form-control hasDatepicker" placeholder="Data" value="" required="" wfd-id="id1">
+                  </div>
+
+                 <div class="form-group">
+                    <input type="text" name="natureza" class="form-control" placeholder="Natureza" onkeyup="this.value = this.value.toUpperCase();" value="" required="" wfd-id="id2">
+
+                  </div>
+
+                 <div class="form-group">
+                    <select class="form-control" name="ocorrencia">
+   		<option value="">Selecione o tipo de ocorrência</option>
+    		<option value="*FLAGRANTE*">FLAGRANTE</option>
+    		<option value="*TERMO CIRCUNSTANCIADO*">TERMO CIRCUNSTANCIADO</option>
+    		<option value="*BOLETIM DE OCORRÊNCIA*">BOLETIM DE OCORRÊNCIA</option>
+    		<option value="*ATO INFRACIONAL*">ATO INFRACIONAL</option>
+		<option value="*PRISÃO TEMPORÁRIA*">PRISÃO TEMPORÁRIA</option>
+		<option value="*PRISÃO PREVENTIVA*">PRISÃO PREVENTIVA</option>
+		<option value="*MANDADO DE BUSCA E APREENSÃO*">MANDADO DE BUSCA E APREENSÃO</option>
+                    </select>
+                  </div>
+
+
+                 <div class="form-group">
+                    <input type="text" name="envolvidos" class="form-control" onkeyup="this.value = this.value.toUpperCase()" placeholder="ex.: 1 PRESO, 1 ADOLESCENTE INFRATOR, 2 INDICIADOS" value="" required="" wfd-id="id3">
+                  </div>
+
+                  <div class="form-group">
+                    <input type="text" name="localfato" class="form-control" onkeyup="this.value = this.value.toUpperCase();" placeholder="Endereço do fato" value="" required="" wfd-id="id4">
+                  </div>
+
+                  <div class="form-group">
+                    <textarea name="historico" class="form-control" placeholder="Breve resumo da ocorrência" style="height:200px" value="" onkeyup="this.value = this.value.toUpperCase();" required=""></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <input type="button" name="gerador" class="btnSubmit btn-block" value="Gerar Resenha" onclick="preencher(this.form);CopyToClipboard('resultado');" wfd-id="id5">
+                  </div>
+                </form>
+<br>
+    <div id="resultado" style="border: solid black 2px;">
+	<p><b>*Polícia Civil*</b></p><p>
+	</p><p><b id="departamento" color:#245996"=""></b></p><p>
+        </p><p><b id="seccional" color:#245996"=""></b></p><p>
+    	</p><p><b id="delegacia" color:#245996"=""></b></p><p>
+        </p><p id="rdo"></p><p>
+	</p><p id="data"></p><p>
+        </p><p id="natureza" "=""></p><p>
+        <b id="ocorrencia" color:#245996"=""></b></p><p>
+        </p><p id="envolvidos" <="" p=""></p><p>
+        </p><p id="localfato" <="" p=""></p><p>
+        </p><p id="historico"></p>
+
+  </div>
+<div class="form-group">
+<input type="button" class="btnSubmit btn-block" value="Encaminhar via WhatsApp" onclick="gotowhatsapp()" ;="" wfd-id="id6">
+</div>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+    </div>
+
+
+
+
+
+  
+<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body></html>
