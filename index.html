@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GERADOR DE RESENHAS ONLINE</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" integrity="sha512-LT9fy1J8pE4Cy6ijbg96UkExgOjCqcxAC7xsnv+mLJxSvftGVmmc236jlPTZXPcBRQcVOWoK1IJhb1dAjtb4lQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
  <!-- Google tag (gtag.js) -->
@@ -17,34 +16,43 @@
   gtag('config', 'G-6QHDQW2J6H');
 </script>
 
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">    </script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js" integrity="sha512-s5u/JBtkPg+Ff2WEr49/cJsod95UgLHbC00N/GglqdQuLnYhALncz8ZHiW/LxDRGduijLKzeYb7Aal9h3codZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://trentrichardson.com/examples/timepicker/jquery-ui-sliderAccess.js"></script>
-	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
+<!-- jQuery UI (inclui suporte ao slider) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<!-- Timepicker Addon -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
+
+<!-- Slider Access  -->
+<script src="https://trentrichardson.com/examples/timepicker/jquery-ui-sliderAccess.js"></script>
 
 
 <script>
-        $(function() {
-            $( "#datepicker" ).datetimepicker({
+$(document).ready(function() {
+    $("#datepicker").datetimepicker({
         dateFormat: 'dd/mm/yy',
-	timeFormat: 'HH:mm',
-	addSliderAccess: true,
+        timeFormat: 'HH:mm',
+        showSecond: false,
+        controlType: 'slider',
+        addSliderAccess: true,
         sliderAccessArgs: { touchonly: false },
-	timeOnlyTitle: 'Escolha o horário',
-	timeText: 'Horário',
-	hourText: 'Horas',
-	minuteText: 'Minutos',
-	currentText: 'Agora',
-	closeText: 'Fechar',
-        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
-        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+        timeOnlyTitle: 'Escolha o horário',
+        timeText: 'Horário',
+        hourText: 'Horas',
+        minuteText: 'Minutos',
+        currentText: 'Agora',
+        closeText: 'Fechar',
+        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+        dayNamesMin: ['D','S','T','Q','Q','S','S'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
         monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
         monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    });
 });
-        });
 
 $(document).ready(function () {
     $("#type").change(function () {
@@ -260,6 +268,34 @@ function gotowhatsapp() {
         color: rgb(246, 246, 252);
         margin-top: 4%;
       }
+.input-group {
+  display: flex;
+  width: 100%;
+}
+
+.input-group .form-control {
+  border-radius: 1.25rem 0 0 1.25rem;
+}
+
+.input-group .btnBuscar {
+  border-radius: 0 1.25rem 1.25rem 0;
+  background-color: #000000;
+  color: #f6f6fc;
+  padding: 0.375rem 1rem;
+  border: 2px solid #ced4da;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.input-group .btnBuscar:hover {
+  background-color: #245996;
+  color: #ffffff;
+  border-color: #245996;
+}
+
+
+
+
+
     </style>
 
   <body>
@@ -293,7 +329,7 @@ function gotowhatsapp() {
   <div class="input-group">
     <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="">
     <div class="input-group-append">
-      <button type="button" class="btn btn-dark" onclick="buscarRDO()">🔎Buscar Registro</button>
+      <button type="button" class="btnBuscar" onclick="buscarRDO()">🔎Buscar Registro</button>
     </div>
   </div>
 </div>
@@ -305,7 +341,7 @@ function gotowhatsapp() {
 </div>
 
                  <div class="form-group">
-                    <input type="text" name="data" id="datepicker" class="form-control hasDatepicker" placeholder="Data" value="" required="" wfd-id="id1">
+                    <input type="text" name="data" id="datepicker" class="form-control" placeholder="Data" value="" required="" wfd-id="id1">
                   </div>
 
                  <div class="form-group">
@@ -389,7 +425,7 @@ function gotowhatsapp() {
 
 
 <script>
-// 🛡️ Use apenas a anon public key
+// 
 const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
 
