@@ -481,15 +481,36 @@ async function buscarRDO() {
 }
 
 function preencherFormulario(dados) {
-    document.querySelector('select[name="departamento"]').value = dados.departamento || '';
-    document.querySelector('select[name="seccional"]').value = dados.seccional || '';
-    document.querySelector('select[name="delegacia"]').value = dados.delegacia || '';
+    const setSelectValue = (selectName, value) => {
+        const select = document.querySelector(`select[name="${selectName}"]`);
+        if (!select) return;
+
+        // Tenta selecionar diretamente
+        select.value = value;
+
+        // Se não encontrar correspondência, procura manualmente entre as opções
+        if (!select.value) {
+            Array.from(select.options).forEach(option => {
+                if (option.value.trim().toUpperCase() === value.trim().toUpperCase()) {
+                    select.value = option.value;
+                }
+            });
+        }
+    };
+
+    // Preencher os campos de texto e data
+    document.querySelector('input[name="rdo"]').value = dados.rdo || '';
     document.querySelector('input[name="data"]').value = dados.data ? dados.data.split('T')[0].split('-').reverse().join('/') : '';
     document.querySelector('input[name="natureza"]').value = dados.natureza || '';
-    document.querySelector('select[name="ocorrencia"]').value = dados.ocorrencia || '';
     document.querySelector('input[name="envolvidos"]').value = dados.envolvidos || '';
     document.querySelector('input[name="localfato"]').value = dados.localfato || '';
     document.querySelector('textarea[name="historico"]').value = dados.historico || '';
+
+    // Preencher os campos com dropdowns (departamento, seccional, delegacia, ocorrencia)
+    setSelectValue("departamento", dados.departamento);
+    setSelectValue("seccional", dados.seccional);
+    setSelectValue("delegacia", dados.delegacia);
+    setSelectValue("ocorrencia", dados.ocorrencia);
 
     alert("✅ Registro carregado com sucesso!");
 }
