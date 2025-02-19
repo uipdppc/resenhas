@@ -333,10 +333,11 @@ function gotowhatsapp() {
 		</div>
 
                   <div class="form-group">
-                   <input type="button" class="btnSubmit btn-block" 
-       value="Gerar e Salvar Resenha" 
-       onclick="processarFormulario(event, this.form, 'resultado')">
+                  <input type="button" name="gerador" class="btnSubmit btn-block" value="Gerar Resenha" onclick="processarFormulario(event, this.form);" wfd-id="id5">
                   </div>
+
+
+
                 </form>
 <br>
     <div id="resultado" style="border: solid black 2px;">
@@ -381,31 +382,17 @@ function gotowhatsapp() {
 const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
 
-async function salvarDados(event) {
-    event.preventDefault(); // Evita recarregar a página
+async function salvarDados(form) {
+    const formData = new FormData(form);
+    const dados = Object.fromEntries(formData.entries());
 
-    const formData = new FormData(event.target); // Captura dados do formulário
-    const dados = Object.fromEntries(formData.entries()); // Converte para objeto
+    console.log("📦 Dados do formulário:", dados);
 
-    console.log("📦 Dados do formulário:", dados); // Debug
-
-    // Verificação de campos vazios
-    for (let key in dados) {
-        if (!dados[key]) {
-            alert(`⚠️ O campo "${key}" está vazio!`);
-            return;
-        }
-    }
-
-    // Formatar data para o padrão YYYY-MM-DD se houver data
     if (dados.data && dados.data.includes("/")) {
         const [dia, mes, ano] = dados.data.split("/");
         dados.data = `${ano}-${mes}-${dia}`;
     }
 
-    console.log("📆 Dados formatados:", dados); // Debug
-
-    // Requisição para o Supabase
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
             method: "POST",
@@ -413,41 +400,33 @@ async function salvarDados(event) {
                 "Content-Type": "application/json",
                 "apikey": SUPABASE_KEY,
                 "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Prefer": "return=representation" // Retorna a resposta da inserção
+                "Prefer": "return=representation"
             },
             body: JSON.stringify(dados),
         });
 
-        console.log("🔄 Status da resposta:", response.status); // Debug
-
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("❌ Erro detalhado:", errorData); // Mostra o erro retornado pelo Supabase
+            console.error("❌ Erro detalhado:", errorData);
             throw new Error(`Erro ao salvar: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
         }
 
-        const responseData = await response.json();
-        console.log("✅ Dados salvos:", responseData); // Confirmação no console
-
-        alert("✅ Dados salvos com sucesso!"); // Alerta visual para o usuário
-
-        // Copiar para a área de transferência
-        CopyToClipboard('resultado');
-
+        alert("✅ Dados salvos com sucesso!");
+        CopyToClipboard('resultado'); // Copia após salvar
     } catch (error) {
-        console.error("⚠️ Erro capturado:", error); // Debug detalhado no console
+        console.error("⚠️ Erro capturado:", error);
         alert(`⚠️ Erro ao salvar: ${error.message}`);
     }
 }
 
 
 
+
 // 🔹 Nova função para processar o formulário e copiar para a área de transferência
-function processarFormulario(event, form, resultadoId) {
+function processarFormulario(event, form) {
     event.preventDefault(); // Evita recarregar a página
-    preencher(form); // Preenche os dados antes de salvar
-    CopyToClipboard(resultadoId); // Copia o texto para a área de transferência
-    salvarDados(form); // Salva no banco
+    preencher(form);        // Preenche os campos no resultado
+    salvarDados(form);      // Salva no Supabase
 }
 
 // 🔹 Função para copiar conteúdo para a área de transferência
