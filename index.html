@@ -400,7 +400,7 @@ async function salvarDados(form) {
     console.log("Dados enviados:", JSON.stringify(dados));
 
     try {
-const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+let response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
     method: "POST",
     mode: "cors",  // Força o modo CORS
     credentials: "omit",  // Não envia cookies nem credenciais
