@@ -270,7 +270,7 @@ function gotowhatsapp() {
             <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
             <div class="row register-form">
               <div class="col-md-12">
-                <form onsubmit="salvarDados(event)">
+                <form id="resenhaForm">
                   <div class="form-group">
                     <select class="form-control" id="type" name="departamento">
     			<option value="Departamento">Selecione o Departamento</option>
@@ -333,7 +333,7 @@ function gotowhatsapp() {
 		</div>
 
                   <div class="form-group">
-                  <input type="button" name="gerador" class="btnSubmit btn-block" value="Gerar Resenha" onclick="processarFormulario(event, this.form);" wfd-id="id5">
+                  <button type="submit" class="btnSubmit btn-block" wfd-id="id5">Gerar Resenha</button>
                   </div>
 
 
@@ -425,11 +425,12 @@ async function salvarDados(form) {
 
 
 // 🔹 Nova função para processar o formulário e copiar para a área de transferência
-function processarFormulario(event, form) {
-    event.preventDefault(); // Evita recarregar a página
-    preencher(form);        // Preenche os campos no resultado
-    salvarDados(form);      // Salva no Supabase
-}
+document.getElementById("resenhaForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // 🚫 Impede recarregamento da página
+    const form = event.target; // 🎯 Captura o formulário enviado
+    preencher(form);         // 📝 Preenche os dados
+    salvarDados(form);       // 💾 Salva no Supabase
+});
 
 // 🔹 Função para copiar conteúdo para a área de transferência
 function CopyToClipboard(resultadoId) {
