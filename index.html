@@ -290,10 +290,15 @@ function gotowhatsapp() {
 			</div>
 
 <div class="form-group">
-    <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="" wfd-id="id0">
+    <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="">
     <button type="button" class="btnSubmit" onclick="buscarRDO()">🔎 Procurar na base</button>
 </div>
 
+<!-- Modal para selecionar registro (caso haja mais de um com o mesmo RDO) -->
+<div id="resultadoModal" style="display: none; padding: 10px; border: 1px solid black; background-color: #f9f9f9; margin-top: 10px;">
+    <h5>Selecione um registro:</h5>
+    <ul id="resultadoLista"></ul>
+</div>
 
                  <div class="form-group">
                     <input type="text" name="data" id="datepicker" class="form-control hasDatepicker" placeholder="Data" value="" required="" wfd-id="id1">
@@ -438,7 +443,7 @@ async function buscarRDO() {
     const rdo = document.getElementById('rdoInput').value.trim();
 
     if (!rdo) {
-        alert("⚠️ Por favor, insira um número de RDO para buscar.");
+        alert("⚠️ Por favor, insira um número de RDO.");
         return;
     }
 
@@ -452,33 +457,65 @@ async function buscarRDO() {
             }
         });
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar RDO: ${response.status}`);
+        }
 
-        if (data.length === 0) {
-            alert("🔎 Nenhum registro encontrado para o RDO informado.");
+        const registros = await response.json();
+
+        if (registros.length === 0) {
+            alert("❌ Nenhum registro encontrado para este RDO.");
             return;
         }
 
-        const resenha = data[0];
+        if (registros.length === 1) {
+            preencherFormulario(registros[0]);
+        } else {
+            mostrarOpcoes(registros);
+        }
 
-        // Preenche os campos com os dados da base
-        document.querySelector('select[name="departamento"]').value = resenha.departamento || "";
-        document.querySelector('select[name="seccional"]').value = resenha.seccional || "";
-        document.querySelector('select[name="delegacia"]').value = resenha.delegacia || "";
-        document.querySelector('input[name="data"]').value = resenha.data || "";
-        document.querySelector('input[name="natureza"]').value = resenha.natureza || "";
-        document.querySelector('select[name="ocorrencia"]').value = resenha.ocorrencia || "";
-        document.querySelector('input[name="envolvidos"]').value = resenha.envolvidos || "";
-        document.querySelector('input[name="localfato"]').value = resenha.localfato || "";
-        document.querySelector('textarea[name="historico"]').value = resenha.historico || "";
-
-        alert("✅ Dados preenchidos com sucesso!");
     } catch (error) {
-        console.error("Erro ao buscar RDO:", error);
-        alert("⚠️ Ocorreu um erro ao buscar o RDO. Verifique o console.");
+        console.error("Erro na busca:", error);
+        alert(`⚠️ Erro ao buscar: ${error.message}`);
     }
 }
 
+function preencherFormulario(dados) {
+    document.querySelector('select[name="departamento"]').value = dados.departamento || '';
+    document.querySelector('select[name="seccional"]').value = dados.seccional || '';
+    document.querySelector('select[name="delegacia"]').value = dados.delegacia || '';
+    document.querySelector('input[name="data"]').value = dados.data ? dados.data.split('T')[0].split('-').reverse().join('/') : '';
+    document.querySelector('input[name="natureza"]').value = dados.natureza || '';
+    document.querySelector('select[name="ocorrencia"]').value = dados.ocorrencia || '';
+    document.querySelector('input[name="envolvidos"]').value = dados.envolvidos || '';
+    document.querySelector('input[name="localfato"]').value = dados.localfato || '';
+    document.querySelector('textarea[name="historico"]').value = dados.historico || '';
+
+    alert("✅ Registro carregado com sucesso!");
+}
+
+function mostrarOpcoes(registros) {
+    const modal = document.getElementById('resultadoModal');
+    const lista = document.getElementById('resultadoLista');
+    lista.innerHTML = '';
+
+    registros.forEach((registro, index) => {
+        const li = document.createElement('li');
+        li.style.cursor = 'pointer';
+        li.style.marginBottom = '5px';
+        li.innerHTML = `
+            <strong>${registro.rdo}</strong> - ${registro.delegacia || 'Sem delegacia'} | 
+            ${registro.data ? registro.data.split('T')[0].split('-').reverse().join('/') : 'Data não disponível'}
+        `;
+        li.onclick = () => {
+            preencherFormulario(registro);
+            modal.style.display = 'none';
+        };
+        lista.appendChild(li);
+    });
+
+    modal.style.display = 'block';
+}
 
 // 🔹 Nova função para processar o formulário e copiar para a área de transferência
 document.getElementById("resenhaForm").addEventListener("submit", function(event) {
