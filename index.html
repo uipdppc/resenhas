@@ -388,35 +388,41 @@ async function salvarDados(form) {
     const formData = new FormData(form);
     const dados = Object.fromEntries(formData.entries());
 
-    console.log("📦 Dados do formulário:", dados);
+    // Log para verificar o objeto capturado
+    console.log("Dados antes da formatação:", dados);
 
+    // Converte a data, se necessário
     if (dados.data && dados.data.includes("/")) {
         const [dia, mes, ano] = dados.data.split("/");
         dados.data = `${ano}-${mes}-${dia}`;
     }
 
+    console.log("Dados enviados:", JSON.stringify(dados));
+
     try {
-const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,  // importante manter isso
-        "Prefer": "return=representation"
-    },
-    body: JSON.stringify(dados),
-});
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Prefer": "return=representation"
+            },
+            body: JSON.stringify(dados),
+        });
+
+        console.log("Status da resposta:", response.status);
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("❌ Erro detalhado:", errorData);
+            console.error("Erro detalhado:", errorData);
             throw new Error(`Erro ao salvar: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
         }
 
         alert("✅ Dados salvos com sucesso!");
-        CopyToClipboard('resultado'); // Copia após salvar
+        CopyToClipboard('resultado');
     } catch (error) {
-        console.error("⚠️ Erro capturado:", error);
+        console.error("Erro capturado:", error);
         alert(`⚠️ Erro ao salvar: ${error.message}`);
     }
 }
