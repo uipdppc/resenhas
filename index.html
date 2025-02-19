@@ -382,14 +382,19 @@ function gotowhatsapp() {
 const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
 
-
-
 async function salvarDados(form) {
     const formData = new FormData(form);
     const dados = Object.fromEntries(formData.entries());
 
-    // Log para verificar o objeto capturado
-    console.log("Dados antes da formatação:", dados);
+    // Função para remover asteriscos dos valores
+    const removerAsteriscos = (valor) => valor ? valor.replace(/\*/g, '').trim() : '';
+
+    // Adiciona novos campos sem os asteriscos
+    dados.departamento_sem_asteriscos = removerAsteriscos(dados.departamento);
+    dados.seccional_sem_asteriscos = removerAsteriscos(dados.seccional);
+    dados.delegacia_sem_asteriscos = removerAsteriscos(dados.delegacia);
+    dados.ocorrencia_sem_asteriscos = removerAsteriscos(dados.ocorrencia);
+    dados.natureza_sem_asteriscos = removerAsteriscos(dados.natureza);
 
     // Converte a data, se necessário
     if (dados.data && dados.data.includes("/")) {
@@ -397,10 +402,10 @@ async function salvarDados(form) {
         dados.data = `${ano}-${mes}-${dia}`;
     }
 
-    console.log("Dados enviados:", JSON.stringify(dados));
+    
 
     try {
-        let response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -410,18 +415,18 @@ async function salvarDados(form) {
             body: JSON.stringify(dados),
         });
 
-        console.log("Status da resposta:", response.status);
+        
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("Erro detalhado:", errorData);
+            
             throw new Error(`Erro ao salvar: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
         }
 
         alert("✅ Dados salvos com sucesso!");
         CopyToClipboard('resultado');
     } catch (error) {
-        console.error("Erro capturado:", error);
+       
         alert(`⚠️ Erro ao salvar: ${error.message}`);
     }
 }
