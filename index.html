@@ -261,7 +261,7 @@ function gotowhatsapp() {
         margin-top: 4%;
       }
     </style>
-  <meta id="dcngeagmmhegagicpcmpinaoklddcgon"></head>
+
   <body>
     <div class="container register">
       <div class="row">
@@ -290,8 +290,12 @@ function gotowhatsapp() {
 			</div>
 
 <div class="form-group">
+  <div class="input-group">
     <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="">
-    <button type="button" class="btnSubmit" onclick="buscarRDO()">🔎 Procurar na base</button>
+    <div class="input-group-append">
+      <button type="button" class="btn btn-dark" onclick="buscarRDO()">🔎Buscar Registro</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal para selecionar registro (caso haja mais de um com o mesmo RDO) -->
@@ -335,13 +339,13 @@ function gotowhatsapp() {
                     <textarea name="historico" class="form-control" placeholder="Breve resumo da ocorrência" style="height:200px" value="" onkeyup="this.value = this.value.toUpperCase();" required=""></textarea>
                   </div>
 
-		<div class="form-group">
-    		<input type="button" class="btnSubmit btn-block" value="🧹 Limpar Formulário" onclick="resetFormulario()">
-		</div>
+<div class="form-group">
+  <input type="button" class="btnSubmit btn-block" value="🧹 Limpar Formulário" onclick="resetFormulario()">
+</div>
 
-                  <div class="form-group">
-                  <button type="submit" class="btnSubmit btn-block" wfd-id="id5">Gerar Resenha</button>
-                  </div>
+<div class="form-group">
+  <input type="submit" class="btnSubmit btn-block" value="Gerar Resenha e Salvar" wfd-id="id5">
+</div>
 
 
 
@@ -481,45 +485,48 @@ async function buscarRDO() {
 }
 
 function preencherFormulario(dados) {
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const setSelectValue = (selectName, value) => {
         const select = document.querySelector(`select[name="${selectName}"]`);
         if (!select) return;
+        const valorComAsteriscos = `*${value}*`;
 
-        // Tenta selecionar diretamente (caso já venha com asteriscos)
-        select.value = value;
+        // Tenta encontrar a opção com e sem asteriscos
+        const option = Array.from(select.options).find(opt =>
+            [opt.value, opt.textContent].some(val => val.trim().toUpperCase() === valorComAsteriscos.toUpperCase())
+        );
 
-        // Se não encontrar, tenta adicionar asteriscos e selecionar
-        if (!select.value) {
-            const valorComAsteriscos = `*${value}*`;
-            select.value = valorComAsteriscos;
-
-            // Se ainda não encontrar, procura manualmente ignorando espaços e caixa
-            if (!select.value) {
-                Array.from(select.options).forEach(option => {
-                    if (option.value.trim().toUpperCase() === valorComAsteriscos.toUpperCase()) {
-                        select.value = option.value;
-                    }
-                });
-            }
-        }
+        if (option) select.value = option.value;
     };
 
-    // Preencher campos de texto e data
-    document.querySelector('input[name="rdo"]').value = dados.rdo || '';
-    document.querySelector('input[name="data"]').value = dados.data ? dados.data.split('T')[0].split('-').reverse().join('/') : '';
-    document.querySelector('input[name="natureza"]').value = dados.natureza || '';
-    document.querySelector('input[name="envolvidos"]').value = dados.envolvidos || '';
-    document.querySelector('input[name="localfato"]').value = dados.localfato || '';
-    document.querySelector('textarea[name="historico"]').value = dados.historico || '';
+    (async () => {
+        // Preenche o Departamento e aciona o evento 'change'
+        document.querySelector('select[name="departamento"]').value = `*${dados.departamento}*`;
+        $("#type").trigger("change");
 
-    // Preencher dropdowns com valores ajustados (adicionando asteriscos)
-    setSelectValue("departamento", dados.departamento);
-    setSelectValue("seccional", dados.seccional);
-    setSelectValue("delegacia", dados.delegacia);
-    setSelectValue("ocorrencia", dados.ocorrencia);
+        // Aguarda o carregamento das opções de Seccional
+        await delay(200);  
+        setSelectValue("seccional", dados.seccional);
+        $("#seccional2").trigger("change");
 
-    alert("✅ Registro carregado com sucesso!");
+        // Aguarda o carregamento das opções de Delegacia
+        await delay(200);  
+        setSelectValue("delegacia", dados.delegacia);
+
+        // Preenche os demais campos normalmente
+        document.querySelector('input[name="rdo"]').value = dados.rdo || '';
+        document.querySelector('input[name="data"]').value = dados.data ? dados.data.split('T')[0].split('-').reverse().join('/') : '';
+        document.querySelector('input[name="natureza"]').value = dados.natureza || '';
+        document.querySelector('input[name="envolvidos"]').value = dados.envolvidos || '';
+        document.querySelector('input[name="localfato"]').value = dados.localfato || '';
+        document.querySelector('textarea[name="historico"]').value = dados.historico || '';
+        setSelectValue("ocorrencia", dados.ocorrencia);
+
+        alert("✅ Registro carregado com sucesso!");
+    })();
 }
+
 
 
 function mostrarOpcoes(registros) {
