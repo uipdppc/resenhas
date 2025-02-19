@@ -389,12 +389,12 @@ async function salvarDados(form) {
     // Função para remover asteriscos dos valores
     const removerAsteriscos = (valor) => valor ? valor.replace(/\*/g, '').trim() : '';
 
-    // Adiciona novos campos sem os asteriscos
-    dados.departamento_sem_asteriscos = removerAsteriscos(dados.departamento);
-    dados.seccional_sem_asteriscos = removerAsteriscos(dados.seccional);
-    dados.delegacia_sem_asteriscos = removerAsteriscos(dados.delegacia);
-    dados.ocorrencia_sem_asteriscos = removerAsteriscos(dados.ocorrencia);
-    dados.natureza_sem_asteriscos = removerAsteriscos(dados.natureza);
+    // Remove os asteriscos diretamente nos campos a serem enviados
+    dados.departamento = removerAsteriscos(dados.departamento);
+    dados.seccional = removerAsteriscos(dados.seccional);
+    dados.delegacia = removerAsteriscos(dados.delegacia);
+    dados.ocorrencia = removerAsteriscos(dados.ocorrencia);
+    dados.natureza = removerAsteriscos(dados.natureza);
 
     // Converte a data, se necessário
     if (dados.data && dados.data.includes("/")) {
