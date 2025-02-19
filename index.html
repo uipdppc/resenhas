@@ -485,20 +485,26 @@ function preencherFormulario(dados) {
         const select = document.querySelector(`select[name="${selectName}"]`);
         if (!select) return;
 
-        // Tenta selecionar diretamente
+        // Tenta selecionar diretamente (caso já venha com asteriscos)
         select.value = value;
 
-        // Se não encontrar correspondência, procura manualmente entre as opções
+        // Se não encontrar, tenta adicionar asteriscos e selecionar
         if (!select.value) {
-            Array.from(select.options).forEach(option => {
-                if (option.value.trim().toUpperCase() === value.trim().toUpperCase()) {
-                    select.value = option.value;
-                }
-            });
+            const valorComAsteriscos = `*${value}*`;
+            select.value = valorComAsteriscos;
+
+            // Se ainda não encontrar, procura manualmente ignorando espaços e caixa
+            if (!select.value) {
+                Array.from(select.options).forEach(option => {
+                    if (option.value.trim().toUpperCase() === valorComAsteriscos.toUpperCase()) {
+                        select.value = option.value;
+                    }
+                });
+            }
         }
     };
 
-    // Preencher os campos de texto e data
+    // Preencher campos de texto e data
     document.querySelector('input[name="rdo"]').value = dados.rdo || '';
     document.querySelector('input[name="data"]').value = dados.data ? dados.data.split('T')[0].split('-').reverse().join('/') : '';
     document.querySelector('input[name="natureza"]').value = dados.natureza || '';
@@ -506,7 +512,7 @@ function preencherFormulario(dados) {
     document.querySelector('input[name="localfato"]').value = dados.localfato || '';
     document.querySelector('textarea[name="historico"]').value = dados.historico || '';
 
-    // Preencher os campos com dropdowns (departamento, seccional, delegacia, ocorrencia)
+    // Preencher dropdowns com valores ajustados (adicionando asteriscos)
     setSelectValue("departamento", dados.departamento);
     setSelectValue("seccional", dados.seccional);
     setSelectValue("delegacia", dados.delegacia);
@@ -514,6 +520,7 @@ function preencherFormulario(dados) {
 
     alert("✅ Registro carregado com sucesso!");
 }
+
 
 function mostrarOpcoes(registros) {
     const modal = document.getElementById('resultadoModal');
