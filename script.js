@@ -888,13 +888,13 @@ async function preencherFotosPDF(resenhaId) {
     console.error("Erro ao preencher fotos no PDF:", error);
   }
 }
-
+https://gerar-pdf-sand.vercel.app/
 
 
 async function gerarPDF() {
   const htmlContent = document.getElementById("pdf-content").outerHTML;
 
-  const response = await fetch("https://gerar-dmxweyvfy-mazys-projects-966ae913.vercel.app/api/gerar-pdf", {
+  const response = await fetch("https://gerar-pdf-sand.vercel.app/api/gerar-pdf", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ html: htmlContent }),
