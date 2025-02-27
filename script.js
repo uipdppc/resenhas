@@ -888,7 +888,6 @@ async function preencherFotosPDF(resenhaId) {
     console.error("Erro ao preencher fotos no PDF:", error);
   }
 }
-https://gerar-pdf-sand.vercel.app/
 
 
 async function gerarPDF() {
