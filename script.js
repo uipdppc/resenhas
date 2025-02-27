@@ -167,115 +167,248 @@ function gotowhatsapp() {
 
 
 // 
-const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc"; // Substitua pela chave correta
+
 const BUCKET_NAME = "fotos_resenhas";  // Nome do bucket criado no Supabase Storage
 
 async function salvarDados(form) {
     const formData = new FormData(form);
     const dados = Object.fromEntries(formData.entries());
+    const token = await getAuthToken();
 
-    // Função para remover asteriscos dos valores
     const removerAsteriscos = (valor) => valor ? valor.replace(/\*/g, '').trim() : '';
 
-    // Remove os asteriscos diretamente nos campos a serem enviados
-    dados.departamento = removerAsteriscos(dados.departamento);
-    dados.seccional = removerAsteriscos(dados.seccional);
-    dados.delegacia = removerAsteriscos(dados.delegacia);
-    dados.ocorrencia = removerAsteriscos(dados.ocorrencia);
-    dados.natureza = removerAsteriscos(dados.natureza);
-
-    // Converte a data, se necessário
-    if (dados.data && dados.data.includes("/")) {
-        const [dia, mes, ano] = dados.data.split("/");
-        dados.data = `${ano}-${mes}-${dia}`;
-    }
-
-    
+    const resenhaDados = {
+        departamento: removerAsteriscos(dados.departamento),
+        seccional: removerAsteriscos(dados.seccional),
+        delegacia: removerAsteriscos(dados.delegacia),
+        ocorrencia: removerAsteriscos(dados.ocorrencia),
+        natureza: removerAsteriscos(dados.natureza),
+        rdo: dados.rdo,
+        envolvidos: dados.envolvidos,
+        localfato: dados.localfato,
+        historico: dados.historico,
+        data: formatarDataParaISO(dados.data), // Converte para formato ISO (YYYY-MM-DD)
+    };
 
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`
-            },
-            body: JSON.stringify(dados),
-        });
-
-if (response.ok) {
-    const savedResenha = await response.json();
-    localStorage.setItem('resenha_id', savedResenha[0]?.id); // 🔑 Salva o ID da resenha
-    listarFotos(savedResenha[0]?.id); // 📷 Carrega as fotos após salvar
-    alert("✅ Dados salvos com sucesso!");
-    CopyToClipboard('resultado');
-} else {
-    const errorData = await response.json();
-    alert(`⚠️ Erro ao salvar: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
-}
-
-        alert("✅ Dados salvos com sucesso!");
-        CopyToClipboard('resultado');
-    } catch (error) {
-       
-        alert(`⚠️ Erro ao salvar: ${error.message}`);
-    }
-}
-
-
-async function buscarRDO() {
-    const rdo = document.getElementById('rdoInput').value.trim();
-
-    if (!rdo) {
-        alert("⚠️ Por favor, insira um número de RDO.");
-        return;
-    }
-
-    try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?rdo=eq.${rdo}`, {
+        // 🔎 Busca a última resenha com o mesmo RDO
+        const buscaResponse = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?rdo=eq.${dados.rdo}&order=created_at.desc&limit=1`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`
+                "Authorization": `Bearer ${token}`
             }
         });
 
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar RDO: ${response.status}`);
+        if (!buscaResponse.ok) {
+            throw new Error(`Erro ao buscar resenha existente: ${buscaResponse.status}`);
         }
 
-        const registros = await response.json();
+        const registros = await buscaResponse.json();
+        const agora = new Date();
 
-        if (registros.length === 0) {
-            alert("❌ Nenhum registro encontrado para este RDO.");
-            return;
-        }
+        let resenhaId = null;
 
-        if (registros.length === 1) {
-            const resenhaId = registros[0]?.id;
+        if (registros.length > 0) {
+            const resenhaExistente = registros[0];
+            const createdAt = new Date(resenhaExistente.created_at);
+            const diferencaEmHoras = (agora - createdAt) / (1000 * 60 * 60); // 🕒 Diferença em horas
 
-            if (resenhaId) {
-                localStorage.setItem('resenha_id', resenhaId); // ✅ Salva o ID da resenha no localStorage
-                preencherFormulario(registros[0]);              // Preenche o formulário com os dados da resenha
-                listarFotos(resenhaId);                        // 📷 Carrega as fotos associadas automaticamente
+            if (diferencaEmHoras <= 1) {
+                // 🔄 Faz UPDATE se criado há menos de 1 hora
+                console.log("🔄 Atualizando resenha existente...");
+                resenhaId = await atualizarResenha(resenhaExistente.id, resenhaDados);
+                alert("✅ Resenha atualizada com sucesso!");
             } else {
-                console.error("❌ ID da resenha não encontrado no registro.");
-                alert("⚠️ Erro: Resenha encontrada, mas sem ID válido.");
+                // 🆕 Cria nova se passou de 1 hora
+                alert("🆕 Criando nova resenha (tempo limite excedido)...");
+                resenhaId = await criarNovaResenha(resenhaDados);
             }
         } else {
-            mostrarOpcoes(registros); // 📝 Exibe opções caso haja mais de um registro com o mesmo RDO
+            // 🆕 Cria nova se não houver registro anterior
+            alert("🆕 Nenhuma resenha existente, criando nova...");
+            resenhaId = await criarNovaResenha(resenhaDados);
         }
 
+        if (!resenhaId) throw new Error("⚠️ Não foi possível obter o ID da resenha.");
+
+        localStorage.setItem('resenha_id', resenhaId); // Salva o ID no localStorage
+        CopyToClipboard('resultado'); // Copia o conteúdo gerado
+
+        // 📝 Salva operação se marcada
+        if (dados.eh_operacao === "on") {
+            await salvarOperacao(dados, resenhaId);
+        }
+
+        listarFotos(resenhaId); // 📷 Atualiza as fotos
+
     } catch (error) {
-        console.error("❌ Erro ao buscar:", error);
-        alert(`⚠️ Erro ao buscar: ${error.message}`);
+        console.error("❌", error);
+        alert(`⚠️ ${error.message}`);
+    }
+}
+
+async function criarNovaResenha(dados) {
+	const token = await getAuthToken();
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`,
+            "Prefer": "return=representation"
+        },
+        body: JSON.stringify(dados),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erro ao criar resenha: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
+    }
+
+    const novaResenha = await response.json();
+    return novaResenha?.[0]?.id || null;
+}
+
+async function atualizarResenha(resenhaId, dados) {
+	const token = await getAuthToken();
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?id=eq.${resenhaId}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`,
+            "Prefer": "return=representation"
+        },
+        body: JSON.stringify(dados),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erro ao atualizar resenha: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
+    }
+
+    const resenhaAtualizada = await response.json();
+    return resenhaAtualizada?.[0]?.id || null;
+}
+
+
+
+async function salvarOperacao(dados, resenhaId) {
+	const token = await getAuthToken();
+    const operacaoDados = {
+        resenha_id: resenhaId,
+        nome_operacao: dados.nome_operacao || null,
+        numero_inquerito: dados.numero_inquerito || null,
+        objetivo_operacao: dados.objetivo_operacao || null,
+        efetivo_operacao: dados.efetivo_operacao || null,
+        viaturas_utilizadas: dados.viaturas_utilizadas ? parseInt(dados.viaturas_utilizadas) : null,
+        mandados_busca: dados.mandados_busca ? parseInt(dados.mandados_busca) : null,
+        mandados_prisao: dados.mandados_prisao ? parseInt(dados.mandados_prisao) : null,
+        prisoes_realizadas: dados.prisoes_realizadas || null,
+        apreensoes: dados.apreensoes || null,
+        veiculos_recuperados: dados.veiculos_recuperados || null,
+        outros: dados.outros || null
+    };
+
+    try {
+        // 🔎 Verifica se já existe uma operação para a resenha
+        const buscaResponse = await fetch(`${SUPABASE_URL}/rest/v1/operacoes?resenha_id=eq.${resenhaId}&order=created_at.desc&limit=1`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${token}`,
+		"Prefer": "return=representation"  // 🔑 Retorna os dados inseridos
+            }
+        });
+
+        if (!buscaResponse.ok) {
+            throw new Error(`Erro ao buscar operação existente: ${buscaResponse.status}`);
+        }
+
+        const operacoes = await buscaResponse.json();
+        const agora = new Date();
+
+        if (operacoes.length > 0) {
+            const operacaoExistente = operacoes[0];
+            const createdAt = new Date(operacaoExistente.created_at);
+            const diferencaEmHoras = (agora - createdAt) / (1000 * 60 * 60); // 🕒 Diferença em horas
+
+            if (diferencaEmHoras <= 1) {
+                // 🔄 Atualiza a operação existente se for recente
+                await atualizarOperacao(operacaoExistente.id, operacaoDados);
+                alert("✅ Operação atualizada com sucesso!");
+                return;
+            }
+        }
+
+        // 🆕 Cria nova operação se não houver ou passou de 1 hora
+        await criarNovaOperacao(operacaoDados);
+        alert("✅ Operação criada com sucesso!");
+
+    } catch (error) {
+        console.error("❌ Erro ao salvar operação:", error);
+        alert(`⚠️ ${error.message}`);
     }
 }
 
 
-function preencherFormulario(dados) {
+
+
+async function buscarRDO() {
+  const token = await getAuthToken();
+  const rdo = document.getElementById('rdoInput').value.trim();
+
+  if (!rdo) {
+    alert("⚠️ Por favor, insira um número de RDO.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?rdo=eq.${rdo}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar RDO: ${response.status}`);
+    }
+
+    const registros = await response.json();
+
+    if (registros.length === 0) {
+      alert("❌ Nenhum registro encontrado para este RDO.");
+      return;
+    }
+
+    if (registros.length === 1) {
+      const resenhaId = registros[0]?.id;
+
+      if (resenhaId) {
+        localStorage.setItem('resenha_id', resenhaId); // Salva o ID da resenha no localStorage
+        preencherFormulario(registros[0]);              // Preenche os campos da interface com os dados do registro
+        listarFotos(resenhaId);                          // Carrega as fotos associadas automaticamente
+      } else {
+         alert("⚠️ Erro: Resenha encontrada, mas sem ID válido.");
+      }
+    } else {
+      mostrarOpcoes(registros); // Caso haja mais de um registro com o mesmo RDO
+    }
+  } catch (error) {
+    alert(`⚠️ Erro ao buscar: ${error.message}`);
+  }
+}
+
+
+
+async function preencherFormulario(dados) {
+	const token = await getAuthToken();
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const setSelectValue = (selectName, value) => {
@@ -290,6 +423,8 @@ function preencherFormulario(dados) {
 
         if (option) select.value = option.value;
     };
+
+     limparCamposOperacao();
 
     (async () => {
         // Preenche o Departamento e aciona o evento 'change'
@@ -314,17 +449,46 @@ function preencherFormulario(dados) {
         document.querySelector('textarea[name="historico"]').value = dados.historico || '';
         setSelectValue("ocorrencia", dados.ocorrencia);
 
+        // 🔎 Busca e preenche dados de operação, se existirem
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/operacoes?resenha_id=eq.${dados.id}`, {
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const operacoes = await response.json();
+            if (operacoes.length > 0) {
+                const operacao = operacoes[0];
+                document.getElementById("isOperacao").checked = true;
+                document.getElementById("operacaoFields").style.display = "block";
+
+                document.querySelector('input[name="nome_operacao"]').value = operacao.nome_operacao || '';
+                document.querySelector('input[name="numero_inquerito"]').value = operacao.numero_inquerito || '';
+                document.querySelector('input[name="objetivo_operacao"]').value = operacao.objetivo_operacao || '';
+                document.querySelector('input[name="efetivo_operacao"]').value = operacao.efetivo_operacao || '';
+                document.querySelector('input[name="viaturas_utilizadas"]').value = operacao.viaturas_utilizadas || '';
+                document.querySelector('input[name="mandados_busca"]').value = operacao.mandados_busca || '';
+                document.querySelector('input[name="mandados_prisao"]').value = operacao.mandados_prisao || '';
+                document.querySelector('textarea[name="prisoes_realizadas"]').value = operacao.prisoes_realizadas || '';
+                document.querySelector('textarea[name="apreensoes"]').value = operacao.apreensoes || '';
+                document.querySelector('textarea[name="veiculos_recuperados"]').value = operacao.veiculos_recuperados || '';
+                document.querySelector('textarea[name="outros"]').value = operacao.outros || '';
+            }
+        }
+
         alert("✅ Registro carregado com sucesso!");
     })();
 }
 
-
 // 📂 Função para verificar se a resenha possui fotos
 async function temAnexos(resenhaId) {
+const token = await getAuthToken();
     const response = await fetch(`${SUPABASE_URL}/rest/v1/fotos_resenhas?resenha_id=eq.${resenhaId}&select=id`, {
         headers: {
             "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
+            "Authorization": `Bearer ${token}`
         }
     });
 
@@ -333,28 +497,23 @@ async function temAnexos(resenhaId) {
 }
 
 
-async function temAnexos(resenhaId) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/fotos_resenhas?resenha_id=eq.${resenhaId}&select=id`, {
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-    });
-
-    const fotos = await response.json();
-    return fotos.length > 0; // ✅ Retorna true se tiver fotos
-}
 
 
 // 📝 Função para exibir múltiplas opções com indicação de anexos
 async function mostrarOpcoes(registros) {
+const token = await getAuthToken();
     const modal = document.getElementById('resultadoModal');
     const lista = document.getElementById('resultadoLista');
     lista.innerHTML = '';
 
     for (const registro of registros) {
-        const anexos = await temAnexos(registro.id); // 🔍 Verifica se há fotos
-        const statusAnexos = anexos ? "📎 Com Anexos" : "❌ Sem Anexos"; // 📎 ou ❌
+        const [anexos, operacao] = await Promise.all([
+            temAnexos(registro.id),  // 📎 Verifica anexos
+            temOperacao(registro.id) // 📋 Verifica operação
+        ]);
+
+        const statusAnexos = anexos ? "📎 Com Anexos" : "❌ Sem Anexos"; //
+	const statusOperacao = operacao ? " | 📋 Com Operação" : ""; // Exibe apenas se tiver operação
 
         const li = document.createElement('li');
         li.style.cursor = 'pointer';
@@ -363,6 +522,7 @@ async function mostrarOpcoes(registros) {
             <strong>${registro.rdo}</strong> - ${registro.delegacia || 'Sem delegacia'} |
             ${registro.data ? registro.data.split('T')[0].split('-').reverse().join('/') : 'Data não disponível'} |
             <span style="font-weight:bold; color:${anexos ? 'green' : 'red'};">${statusAnexos}</span>
+	    ${operacao ? `<span style="font-weight:bold; color:blue;">${statusOperacao}</span>` : ''}
         `;
         li.onclick = () => {
             localStorage.setItem('resenha_id', registro.id);  // 🔑 Salva o ID
@@ -401,12 +561,14 @@ function resetFormulario() {
     document.querySelector("form").reset();      // Reseta todos os campos do formulário
     localStorage.removeItem('resenha_id');       // Remove o ID da resenha do localStorage
     document.getElementById("fotosPreview").innerHTML = ""; // Limpa a visualização das fotos
+    document.getElementById("operacaoFields").style.display = "none";
     alert("🔄 Formulário e fotos resetados!");
 }
 
 
 // ✅ Função para fazer upload das fotos
 async function uploadFotos() {
+const token = await getAuthToken();
     const resenhaId = localStorage.getItem('resenha_id');
     if (!resenhaId) {
         alert("⚠️ Primeiro salve ou carregue uma resenha para associar as fotos.");
@@ -435,7 +597,7 @@ async function uploadFotos() {
                         headers: {
                             "Content-Type": compressedFile.type,
                             "apikey": SUPABASE_KEY,
-                            "Authorization": `Bearer ${SUPABASE_KEY}`
+                            "Authorization": `Bearer ${token}`
                         },
                         body: compressedFile
                     });
@@ -450,7 +612,7 @@ async function uploadFotos() {
                         headers: {
                             "Content-Type": "application/json",
                             "apikey": SUPABASE_KEY,
-                            "Authorization": `Bearer ${SUPABASE_KEY}`
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             resenha_id: resenhaId,
@@ -474,10 +636,11 @@ async function uploadFotos() {
 
 // 📷 Função para listar fotos associadas à resenha
 async function listarFotos(resenhaId) {
+const token = await getAuthToken();
     const response = await fetch(`${SUPABASE_URL}/rest/v1/fotos_resenhas?resenha_id=eq.${resenhaId}`, {
         headers: {
             "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
+            "Authorization": `Bearer ${token}`
         }
     });
 
@@ -493,3 +656,300 @@ async function listarFotos(resenhaId) {
         fotosDiv.appendChild(img);
     });
 }
+
+function toggleOperacaoFields() {
+  const operacaoFields = document.getElementById("operacaoFields");
+  const isChecked = document.getElementById("isOperacao").checked;
+  operacaoFields.style.display = isChecked ? "block" : "none";
+}
+
+function limparCamposOperacao() {
+    document.querySelectorAll("#operacaoFields input, #operacaoFields textarea").forEach(input => {
+        input.value = ""; // Limpa os valores
+    });
+    document.getElementById("isOperacao").checked = false; // Desmarca a caixa de seleção
+    document.getElementById("operacaoFields").style.display = "none"; // Oculta o bloco
+}
+
+// 🔍 Verifica se a resenha possui operação
+async function temOperacao(resenhaId) {
+    const token = await getAuthToken();
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/operacoes?resenha_id=eq.${resenhaId}&select=id`, {
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`
+        }
+    });
+    const operacoes = await response.json();
+    return operacoes.length > 0;
+}
+
+function formatarDataParaISO(dataInput) {
+    if (!dataInput) return null;
+
+    // Se já estiver no formato ISO (YYYY-MM-DD), retorna direto
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dataInput)) return dataInput;
+
+    // Se for no formato brasileiro (DD/MM/YYYY), converte para YYYY-MM-DD
+    const matchBR = dataInput.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+    if (matchBR) return `${matchBR[3]}-${matchBR[2]}-${matchBR[1]}`;
+
+    // Se vier com hora (DD/MM/YYYY HH:MM), considera só a data
+    const matchBRComHora = dataInput.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+\d{2}:\d{2}/);
+    if (matchBRComHora) return `${matchBRComHora[3]}-${matchBRComHora[2]}-${matchBRComHora[1]}`;
+
+    alert("⚠️ Formato de data não reconhecido:", dataInput);
+    return null; // Retorna nulo se não reconhecer
+}
+
+async function atualizarOperacao(operacaoId, dados) {
+const token = await getAuthToken();
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/operacoes?id=eq.${operacaoId}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`,
+            "Prefer": "return=representation"
+        },
+        body: JSON.stringify(dados),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erro ao atualizar operação: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
+    }
+
+    const operacaoAtualizada = await response.json();
+    return operacaoAtualizada?.[0]?.id || null;
+}
+
+
+async function criarNovaOperacao(dados) {
+const token = await getAuthToken();
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/operacoes`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`,
+            "Prefer": "return=representation"
+        },
+        body: JSON.stringify(dados),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erro ao criar operação: ${response.status} - ${errorData.message || 'Erro desconhecido'}`);
+    }
+
+    const novaOperacao = await response.json();
+    return novaOperacao?.[0]?.id || null;
+}
+
+async function getAuthToken() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) throw new Error("Usuário não autenticado");
+  return session.access_token;
+}
+
+
+
+	
+async function preencherTemplatePDF() {
+
+  // Departamento – usando o <select> com id "type"
+  const selectDep = document.getElementById("type");
+  document.getElementById("pdf-departamento").innerText = selectDep.options[selectDep.selectedIndex].text || '';
+
+  // Seccional – <select> com id "seccional2"
+  const selectSec = document.getElementById("seccional2");
+  document.getElementById("pdf-seccional").innerText = selectSec.options[selectSec.selectedIndex].text || '';
+
+  // Delegacia – <select> com id "delegacia2" (corrigido)
+  const selectDel = document.getElementById("delegacia2");
+  document.getElementById("pdf-delegacia").innerText = selectDel.options[selectDel.selectedIndex].text || '';
+
+  // Nome da operação – se estiver definido como input com name "nome_operacao"
+  const nomeOperacaoElem = document.querySelector('input[name="nome_operacao"]');
+  document.getElementById("pdf-operacao").innerText = nomeOperacaoElem ? nomeOperacaoElem.value : '';
+  
+  // data da ocorrência
+  const dataElem = document.querySelector('input[name="data"]');
+  document.getElementById("pdf-data").innerText = dataElem ? dataElem.value : '';
+
+  // Endereço da ocorrência
+  const rdoElem = document.querySelector('input[name="rdo"]');
+  document.getElementById("pdf-rdo").innerText = rdoElem ? rdoElem.value : '';
+
+  // Número do inquérito – se existir input com id ou name "numero_inquerito"
+  const inqueritoElem = document.getElementById("numero_inquerito") || document.querySelector('input[name="numero_inquerito"]');
+  document.getElementById("pdf-inquerito").innerText = inqueritoElem ? inqueritoElem.value : '';
+
+  // Endereço da ocorrência
+  const enderecoElem = document.querySelector('input[name="localfato"]');
+  document.getElementById("pdf-endereco").innerText = enderecoElem ? enderecoElem.value : '';
+
+  // Objetivo da operação – ajustar para input ou textarea conforme seu HTML
+  const objetivoElem = document.querySelector('input[name="objetivo_operacao"]') || document.querySelector('textarea[name="objetivo_operacao"]');
+  document.getElementById("pdf-objetivo").innerText = objetivoElem ? objetivoElem.value : '';
+
+  // Efetivo utilizado – assumindo input com name "efetivo_operacao"
+  const efetivoElem = document.querySelector('input[name="efetivo_operacao"]');
+  document.getElementById("pdf-efetivo").innerText = efetivoElem ? efetivoElem.value : '';
+
+  // Total de viaturas – input com name "viaturas_utilizadas"
+  const viaturasElem = document.querySelector('input[name="viaturas_utilizadas"]');
+  document.getElementById("pdf-viaturas").innerText = viaturasElem ? viaturasElem.value : '';
+
+  // Mandados de busca – input com name "mandados_busca"
+  const mandadosBuscaElem = document.querySelector('input[name="mandados_busca"]');
+  document.getElementById("pdf-mandados-busca").innerText = mandadosBuscaElem ? mandadosBuscaElem.value : '';
+
+  // Mandados de prisão – input com name "mandados_prisao"
+  const mandadosPrisaoElem = document.querySelector('input[name="mandados_prisao"]');
+  document.getElementById("pdf-mandados-prisao").innerText = mandadosPrisaoElem ? mandadosPrisaoElem.value : '';
+
+  // Prisões realizadas – supondo que seja um textarea com name "prisoes_realizadas"
+  const prisoesElem = document.querySelector('textarea[name="prisoes_realizadas"]');
+  document.getElementById("pdf-prisoes").innerText = prisoesElem ? prisoesElem.value : '';
+
+  // Apreensões – textarea com name "apreensoes"
+  const apreensoesElem = document.querySelector('textarea[name="apreensoes"]');
+  document.getElementById("pdf-apreensoes").innerText = apreensoesElem ? apreensoesElem.value : '';
+
+  // Veículos recuperados – textarea com name "veiculos_recuperados"
+  const veiculosElem = document.querySelector('textarea[name="veiculos_recuperados"]');
+  document.getElementById("pdf-veiculos").innerText = veiculosElem ? veiculosElem.value : '';
+
+  // Outros – textarea com name "outros"
+  const outrosElem = document.querySelector('textarea[name="outros"]');
+  document.getElementById("pdf-outros").innerText = outrosElem ? outrosElem.value : '';
+
+  // Resenha – supondo que o elemento com id "historico" contenha a resenha
+  const resenhaElem = document.querySelector('textarea[name="historico"]');
+const conteudoResenha = resenhaElem ? resenhaElem.value : '';
+document.getElementById("pdf-resenha").innerHTML = conteudoResenha + '<div style="height:10px;"></div>';
+
+
+ // Preenche o container de fotos
+  const resenhaId = localStorage.getItem('resenha_id');
+  if (resenhaId) {
+    await preencherFotosPDF(resenhaId);
+  }
+
+
+
+}
+
+
+// Função para preencher o container de fotos no PDF
+async function preencherFotosPDF(resenhaId) {
+  const token = await getAuthToken();
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/fotos_resenhas?resenha_id=eq.${resenhaId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar fotos: ${response.status}`);
+    }
+
+    const fotos = await response.json();
+    const container = document.getElementById("pdf-fotos");
+    const tituloFotos = document.getElementById("pdf-fotos-titulo");
+    const fotosSection = document.getElementById("pdf-fotos-container");
+
+    // Limpa o container de fotos antes de adicionar novas imagens
+    container.innerHTML = "";
+
+    if (fotos.length > 0) {
+      // Exibe a seção e o título "Fotos da Operação" se houver fotos
+      fotosSection.style.display = "block";
+      tituloFotos.style.display = "block";
+
+      fotos.forEach(foto => {
+        const img = document.createElement("img");
+        img.src = foto.url;
+        img.alt = foto.nome_arquivo;
+        img.style = "max-width: 100%; height: auto; margin-bottom: 10px;";
+        container.appendChild(img);
+      });
+    } else {
+      // Oculta a seção de fotos se não houver imagens
+      fotosSection.style.display = "none";
+    }
+  } catch (error) {
+    console.error("Erro ao preencher fotos no PDF:", error);
+  }
+}
+
+
+
+async function gerarPDF() {
+  const htmlContent = document.getElementById("pdf-content").outerHTML;
+
+  const response = await fetch("https://gerar-i90rkxhid-mazys-projects-966ae913.vercel.app/api/gerar-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ html: htmlContent }),
+  });
+
+  if (response.ok) {
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "relatorio.pdf";
+    link.click();
+  } else {
+    console.error("Erro ao gerar PDF:", await response.json());
+  }
+}
+
+
+
+// Função auxiliar para converter uma imagem em Base64
+async function getImageBase64(url) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+
+function getImageDimensions(base64) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64;
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+  });
+}
+
+
+// 🔄 Converte um elemento de imagem HTML para Base64
+function getBase64FromImage(img) {
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width;
+  canvas.height = img.height;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  return canvas.toDataURL('image/png');
+}
+
+
+// Listener para o botão
+document.getElementById("gerar-pdf").addEventListener("click", gerarPDF);
+
+

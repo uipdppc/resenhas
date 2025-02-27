@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+
+  <!-- Carregue as bibliotecas primeiro -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
+
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      max-width: 400px; 
+      margin: auto; 
+      padding: 50px; 
+      text-align: center; 
+    }
+    input { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+    }
+    button { 
+      width: 100%; 
+      padding: 10px; 
+      background-color: #4CAF50; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+    }
+    button:hover { 
+      background-color: #45a049; 
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔒 Login</h2>
+  <!-- O usuário digita apenas a parte inicial do email -->
+  <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
+  <p><strong>@policiacivil.sp.gov.br</strong></p>
+  <input type="password" id="senha" placeholder="Senha" required>
+  <button onclick="login()">Entrar</button>
+
+  <p id="status" style="color: red;"></p>
+
+  <script>
+    const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Função que constrói o email completo automaticamente
+    function construirEmail(userInput) {
+      return userInput.trim() + "@policiacivil.sp.gov.br";
+    }
+
+    async function login() {
+      const usuarioInput = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value;
+      const status = document.getElementById("status");
+
+      if (!usuarioInput || !senha) {
+        status.innerText = "⚠️ Preencha todos os campos!";
+        return;
+      }
+
+      // Constrói o email completo
+      const email = construirEmail(usuarioInput);
+
+      // Realiza o login via Supabase Auth com signInWithPassword (v2)
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: senha
+      });
+      
+      if (error || !data.user) {
+        alert("❌ Usuário não encontrado ou senha incorreta.");
+        return;
+      }
+      
+      // Verifica o status de ativação na tabela "usuarios"
+      const { data: perfil, error: perfilError } = await supabaseClient
+  .from('usuarios')
+  .select('autorizado')
+  .eq('id', data.user.id)
+  .maybeSingle();
+
+if (perfilError) {
+  alert("Erro ao verificar ativação: " + perfilError.message);
+  return;
+}
+
+if (!perfil) {
+  alert("Sua conta ainda não foi ativada ou não existe um perfil associado.");
+  return;
+}
+
+if (!perfil.autorizado) {
+  alert("Sua conta ainda não foi ativada. Aguarde aprovação.");
+  return;
+}
+
+      
+      alert("Login bem-sucedido!");
+      window.location.href = "index.html";
+    }
+  </script>
+  
+</body>
+</html>
+
+
+
+

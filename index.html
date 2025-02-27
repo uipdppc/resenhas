@@ -1,262 +1,467 @@
 <!-- Desenvolvido por Marcos Matos e Vinicius Coelho 2022 -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GERADOR DE RESENHAS ONLINE</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
-<html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GERADOR DE RESENHAS ONLINE</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QHDQW2J6H"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6QHDQW2J6H');
+  </script>
 
- <!-- Google tag (gtag.js) -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6QHDQW2J6H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- jQuery UI -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <!-- Timepicker Addon -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
+  <!-- Slider Access  -->
+  <script src="https://trentrichardson.com/examples/timepicker/jquery-ui-sliderAccess.js"></script>
+ 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
 
-  gtag('config', 'G-6QHDQW2J6H');
-</script>
-
-<!-- jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
-<!-- jQuery UI (inclui suporte ao slider) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-
-<!-- Timepicker Addon -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
-
-<!-- Slider Access  -->
-<script src="https://trentrichardson.com/examples/timepicker/jquery-ui-sliderAccess.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+ 
+
+  <style>
+    .register .nav-tabs .nav-link:hover {
+      border: none;
+    }
+    .text-align {
+      margin-top: 0;
+      margin-bottom: 15%;
+      margin-left: 30%;
+    }
+    .form-new {
+      margin-right: 10%;
+      margin-left: 10%;
+    }
+    .register-heading {
+      position: relative;
+      width: 360px;
+      margin: auto;
+      margin-bottom: 5%;
+      color: #000000;
+    }
+    .register-heading h1 {
+      margin-left: 20%;
+      margin-bottom: 10%;
+      color: #e9ecef;
+    }
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 0.375rem 0.75rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      background-clip: padding-box;
+      border: 2px solid #ced4da;
+      border-radius: 1.25rem;
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .register {
+      background-image: url("img/bg_barra_circulos.jpg");
+      margin: auto;
+      padding: 1%;
+      border-radius: 2.5rem;
+    }
+    .btnSubmit {
+      width: 50%;
+      border-radius: 1rem;
+      padding: 1.5%;
+      background-color: #000000;
+      border: none;
+      cursor: pointer;
+      margin-right: 6%;
+      color: rgb(246, 246, 252);
+      margin-top: 4%;
+    }
+    .input-group {
+      display: flex;
+      width: 100%;
+    }
+    .input-group .form-control {
+      border-radius: 1.25rem 0 0 1.25rem;
+    }
+    .input-group .btnBuscar {
+      border-radius: 0 1.25rem 1.25rem 0;
+      background-color: #000000;
+      color: #f6f6fc;
+      padding: 0.375rem 1rem;
+      border: 2px solid #ced4da;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .input-group .btnBuscar:hover {
+      background-color: #245996;
+      color: #ffffff;
+      border-color: #245996;
+    }
 
 
-    <style>
-      .register .nav-tabs .nav-link:hover {
-        border: none;
-      }
-      .text-align {
-        margin-top: -0%;
-        margin-bottom: 15%;
-        padding: -4%;
-        margin-left: 30%;
-      }
-      .form-new {
-        margin-right: 10%;
-        margin-left: 10%;
-	
-      }
-      .register-heading {
-  	position: relative;
-  	width: 360px;
-  	margin: auto;
-	margin-bottom: 5%;
-        color: #000000;
+#pdf-content {
+  padding: 0px 20px 20px 20px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+th, td {
+  
+  padding: 10px;
+  word-wrap: break-word;
+  box-sizing: border-box; /* Garante que padding não quebre a borda */
+}
 
-      }
-      .register-heading h1 {
-        margin-left: 20%;
-        margin-bottom: 10%;
-        color: #e9ecef;
-      }
-	
-      .form-control {
-    display: block;
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    background-clip: padding-box;
-    border: 2px solid #ced4da;
-    border-radius: 1.25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-      }
+#pdf-resenha {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.5;
+  width: 100%;             /* Faz o div ocupar toda a célula */
+  box-sizing: border-box;  /* Previne que o padding quebre a borda */
+  margin: 0;               /* Remove qualquer margem que possa empurrar a borda */
+  padding: 5px;              /* Controle total com a célula (td) */
+  border: 1px solid #000; /* Força a aplicação das bordas */
+}
 
-      .register {
-        #background: -webkit-linear-gradient(left, #055a4f, #00c6ff);
-	background-image: url("img/bg_barra_circulos.jpg");
-  	margin: auto;
-        padding: 1%;
-        border-radius: 2.5rem;
-
-      }
-      .btnSubmit {
-        width: 50%;
-        border-radius: 1rem;
-        padding: 1.5%;
-        color: #fff;
-        background-color: #000000;
-        border: none;
-        cursor: pointer;
-        margin-right: 6%;
-        color: rgb(246, 246, 252);
-        margin-top: 4%;
-      }
-.input-group {
-  display: flex;
+#pdf-fotos-wrapper {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  display: block;
   width: 100%;
 }
 
-.input-group .form-control {
-  border-radius: 1.25rem 0 0 1.25rem;
+#pdf-fotos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
-.input-group .btnBuscar {
-  border-radius: 0 1.25rem 1.25rem 0;
-  background-color: #000000;
-  color: #f6f6fc;
-  padding: 0.375rem 1rem;
-  border: 2px solid #ced4da;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.input-group .btnBuscar:hover {
-  background-color: #245996;
-  color: #ffffff;
-  border-color: #245996;
+#pdf-fotos img {
+  max-width: 400px;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  margin-bottom: 10px;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 
 
 
+  </style>
 
-    </style>
+  <script>
+    const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  <body>
-    <div class="container register">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="tab-pane fade show active text-align form-new" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
-            <div class="row register-form">
-              <div class="col-md-12">
-                <form id="resenhaForm">
-                  <div class="form-group">
-                    <select class="form-control" id="type" name="departamento">
-    			<option value="Departamento">Selecione o Departamento</option>
-    			<option value="*DECAP*">DECAP</option>
-			<option value="*DEINTER-1*">DEINTER-1</option>
-    			<option value="*DEINTER-6*">DEINTER-6</option>
-			<option value="*DEIC*">DEIC</option>
-			<option value="*DPPC*">DPPC</option>
-                    </select>
+    // Verifica se há uma sessão ativa
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        alert("⚠️ Faça login primeiro.");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+</head>
+
+<body>
+  <div class="container register">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tab-pane fade show active text-align form-new" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
+          <div class="row register-form">
+            <div class="col-md-12">
+              <form id="resenhaForm">
+                <div class="form-group">
+                  <select class="form-control" id="type" name="departamento">
+                    <option value="Departamento">Selecione o Departamento</option>
+                    <option value="*DECAP*">DECAP</option>
+                    <option value="*DEINTER-1*">DEINTER-1</option>
+                    <option value="*DEINTER-6*">DEINTER-6</option>
+                    <option value="*DEIC*">DEIC</option>
+                    <option value="*DPPC*">DPPC</option>
+                  </select>
                   <select class="form-control" name="seccional" id="seccional2">
-    			<option value="">Selecione a Seccional</option>
-                    </select>
-			<select class="form-control" name="delegacia" id="delegacia2">
-    			<option value="">Selecione a Unidade</option>
-			</select>
+                    <option value="">Selecione a Seccional</option>
+                  </select>
+                  <select class="form-control" name="delegacia" id="delegacia2">
+                    <option value="">Selecione a Unidade</option>
+                  </select>
+                </div>
 
-			</div>
-
-<div class="form-group">
-  <div class="input-group">
-    <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" value="" required="">
-    <div class="input-group-append">
-      <button type="button" class="btnBuscar" onclick="buscarRDO()">🔎Buscar Registro</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para selecionar registro (caso haja mais de um com o mesmo RDO) -->
-<div id="resultadoModal" style="display: none; padding: 10px; border: 1px solid black; background-color: #f9f9f9; margin-top: 10px;">
-    <h5>Selecione um registro:</h5>
-    <ul id="resultadoLista"></ul>
-</div>
-
-                 <div class="form-group">
-                    <input type="text" name="data" id="datepicker" class="form-control" placeholder="Data" value="" required="" wfd-id="id1">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="rdoInput" placeholder="Número do Procedimento" onkeyup="this.value = this.value.toUpperCase();" name="rdo" required>
+                    <div class="input-group-append">
+                      <button type="button" class="btnBuscar" onclick="buscarRDO()">🔎Buscar Registro</button>
+                    </div>
                   </div>
+                </div>
 
-                 <div class="form-group">
-                    <input type="text" name="natureza" class="form-control" placeholder="Natureza" onkeyup="this.value = this.value.toUpperCase();" value="" required="" wfd-id="id2">
+                <!-- Modal para selecionar registro -->
+                <div id="resultadoModal" style="display: none; padding: 10px; border: 1px solid black; background-color: #f9f9f9; margin-top: 10px;">
+                  <h5>Selecione um registro:</h5>
+                  <ul id="resultadoLista"></ul>
+                </div>
 
-                  </div>
+                <div class="form-group">
+                  <input type="text" name="data" id="datepicker" class="form-control" placeholder="Data" required>
+                </div>
 
-                 <div class="form-group">
-                    <select class="form-control" name="ocorrencia">
-   		<option value="">Selecione o tipo de ocorrência</option>
-    		<option value="*FLAGRANTE*">FLAGRANTE</option>
-    		<option value="*TERMO CIRCUNSTANCIADO*">TERMO CIRCUNSTANCIADO</option>
-    		<option value="*BOLETIM DE OCORRÊNCIA*">BOLETIM DE OCORRÊNCIA</option>
-    		<option value="*ATO INFRACIONAL*">ATO INFRACIONAL</option>
-		<option value="*PRISÃO TEMPORÁRIA*">PRISÃO TEMPORÁRIA</option>
-		<option value="*PRISÃO PREVENTIVA*">PRISÃO PREVENTIVA</option>
-		<option value="*MANDADO DE BUSCA E APREENSÃO*">MANDADO DE BUSCA E APREENSÃO</option>
-                    </select>
-                  </div>
+                <div class="form-group">
+                  <input type="text" name="natureza" class="form-control" placeholder="Natureza" onkeyup="this.value = this.value.toUpperCase();" required>
+                </div>
 
+                <div class="form-group">
+                  <select class="form-control" name="ocorrencia">
+                    <option value="">Selecione o tipo de ocorrência</option>
+                    <option value="*FLAGRANTE*">FLAGRANTE</option>
+                    <option value="*TERMO CIRCUNSTANCIADO*">TERMO CIRCUNSTANCIADO</option>
+                    <option value="*BOLETIM DE OCORRÊNCIA*">BOLETIM DE OCORRÊNCIA</option>
+                    <option value="*ATO INFRACIONAL*">ATO INFRACIONAL</option>
+                    <option value="*PRISÃO TEMPORÁRIA*">PRISÃO TEMPORÁRIA</option>
+                    <option value="*PRISÃO PREVENTIVA*">PRISÃO PREVENTIVA</option>
+                    <option value="*MANDADO DE BUSCA E APREENSÃO*">MANDADO DE BUSCA E APREENSÃO</option>
+                  </select>
+                </div>
 
-                 <div class="form-group">
-                    <input type="text" name="envolvidos" class="form-control" onkeyup="this.value = this.value.toUpperCase()" placeholder="ex.: 1 PRESO, 1 ADOLESCENTE INFRATOR, 2 INDICIADOS" value="" required="" wfd-id="id3">
-                  </div>
+                <div class="form-group">
+                  <input type="text" name="envolvidos" class="form-control" onkeyup="this.value = this.value.toUpperCase()" placeholder="ex.: 1 PRESO, 1 ADOLESCENTE INFRATOR, 2 INDICIADOS" required>
+                </div>
 
+                <div class="form-group">
+                  <input type="text" name="localfato" class="form-control" onkeyup="this.value = this.value.toUpperCase();" placeholder="Endereço do fato" required>
+                </div>
+
+                <div class="form-group">
+                  <textarea name="historico" class="form-control" placeholder="Breve resumo da ocorrência" style="height:200px" onkeyup="this.value = this.value.toUpperCase();" required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>
+                    <input type="checkbox" name="eh_operacao" id="isOperacao" onchange="toggleOperacaoFields()"> É uma Operação Policial?
+                  </label>
+                </div>
+
+                <div id="operacaoFields" style="display: none; border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                  <h5>Informações da Operação</h5>
+                  <!-- Campos de operação -->
                   <div class="form-group">
-                    <input type="text" name="localfato" class="form-control" onkeyup="this.value = this.value.toUpperCase();" placeholder="Endereço do fato" value="" required="" wfd-id="id4">
+                    <label>Nome da Operação:</label>
+                    <input type="text" class="form-control" name="nome_operacao" placeholder="Nome da Operação">
                   </div>
-
                   <div class="form-group">
-                    <textarea name="historico" class="form-control" placeholder="Breve resumo da ocorrência" style="height:200px" value="" onkeyup="this.value = this.value.toUpperCase();" required=""></textarea>
+                    <label>Número do Inquérito Policial:</label>
+                    <input type="text" class="form-control" name="numero_inquerito" placeholder="Número do Inquérito">
                   </div>
+                  <div class="form-group">
+                    <label>Objetivo da Operação:</label>
+                    <input type="text" class="form-control" name="objetivo_operacao" placeholder="Objetivo">
+                  </div>
+                  <div class="form-group">
+                    <label>Efetivo Utilizado na Operação:</label>
+                    <input type="text" class="form-control" name="efetivo_operacao" placeholder="Ex: 10 policiais">
+                  </div>
+                  <div class="form-group">
+                    <label>Total de Viaturas Utilizadas na Operação:</label>
+                    <input type="number" class="form-control" name="viaturas_utilizadas" placeholder="Número de viaturas">
+                  </div>
+                  <div class="form-group">
+                    <label>Quantidade de Mandados de Busca e Apreensão:</label>
+                    <input type="number" class="form-control" name="mandados_busca" placeholder="Quantidade">
+                  </div>
+                  <div class="form-group">
+                    <label>Quantidade de Mandados de Prisão:</label>
+                    <input type="number" class="form-control" name="mandados_prisao" placeholder="Quantidade">
+                  </div>
+                  <div class="form-group">
+                    <label>Prisões Realizadas/Natureza Jurídica/Procurado:</label>
+                    <textarea class="form-control" name="prisoes_realizadas" placeholder="Ex: 2 prisões preventivas, 1 procurado capturado"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Quantidade/Descrição das Apreensões (Drogas em gramas):</label>
+                    <textarea class="form-control" name="apreensoes" placeholder="Ex: 500g de cocaína, 1 arma de fogo"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Veículos Recuperados:</label>
+                    <textarea class="form-control" name="veiculos_recuperados" placeholder="Ex: 2 motocicletas, 1 carro"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Outros:</label>
+                    <textarea class="form-control" name="outros" placeholder="Outras informações relevantes"></textarea>
+                  </div>
+                </div>
 
-<div class="form-group">
-  <label for="fotoUpload">📷 Upload de Fotos:</label>
-  <input type="file" class="form-control" id="fotoUpload" multiple accept="image/*">
-  <input type="button" class="btnSubmit btn-block" value="📤 Enviar Fotos" onclick="uploadFotos()">
-</div>
+                <div class="form-group">
+                  <label for="fotoUpload">📷 Upload de Fotos:</label>
+                  <input type="file" class="form-control" id="fotoUpload" multiple accept="image/*">
+                  <input type="button" class="btnSubmit btn-block" value="📤 Enviar Fotos" onclick="uploadFotos()">
+                </div>
 
-<div id="fotosPreview" style="margin-top: 10px;"></div>
+                <div id="fotosPreview" style="margin-top: 10px;"></div>
 
-<div class="form-group">
-  <input type="button" class="btnSubmit btn-block" value="🧹 Limpar Formulário" onclick="resetFormulario()">
-</div>
+                <div class="form-group">
+                  <input type="button" class="btnSubmit btn-block" value="🧹 Limpar Formulário" onclick="resetFormulario()">
+                </div>
 
-<div class="form-group">
-  <input type="submit" class="btnSubmit btn-block" value="Gerar Resenha e Salvar" wfd-id="id5">
-</div>
+                <div class="form-group">
+                  <input type="submit" class="btnSubmit btn-block" value="Gerar Resenha e Salvar">
+                </div>
 
-
-
-                </form>
-<br>
-    <div id="resultado" style="border: solid black 2px;">
-	<p><b>*Polícia Civil*</b></p><p>
-	</p><p><b id="departamento" color:#245996"=""></b></p><p>
-        </p><p><b id="seccional" color:#245996"=""></b></p><p>
-    	</p><p><b id="delegacia" color:#245996"=""></b></p><p>
-        </p><p id="rdo"></p><p>
-	</p><p id="data"></p><p>
-        </p><p id="natureza" "=""></p><p>
-        <b id="ocorrencia" color:#245996"=""></b></p><p>
-        </p><p id="envolvidos" <="" p=""></p><p>
-        </p><p id="localfato" <="" p=""></p><p>
-        </p><p id="historico"></p>
-
-  </div>
-<div class="form-group">
-<input type="button" class="btnSubmit btn-block" value="Encaminhar via WhatsApp" onclick="gotowhatsapp()" ;="" wfd-id="id6">
-</div>
-
+  		<div class="form-group">
+		<input type="button" id="gerar-pdf" class="btnSubmit btn-block" value="Gerar PDF - Formulário Operação">
+		</div>
+              </form>
+              <br>
+              <div id="resultado" style="border: solid black 2px;">
+                <p><b>*Polícia Civil*</b></p>
+                <p><b id="departamento"></b></p>
+                <p><b id="seccional"></b></p>
+                <p><b id="delegacia"></b></p>
+                <p id="rdo"></p>
+                <p id="data"></p>
+                <p id="natureza"></p>
+                <p><b id="ocorrencia"></b></p>
+                <p id="envolvidos"></p>
+                <p id="localfato"></p>
+                <p id="historico"></p>
               </div>
-
-
+              <div class="form-group">
+                <input type="button" class="btnSubmit btn-block" value="Encaminhar via WhatsApp" onclick="gotowhatsapp()">
+              </div>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
-
-
     </div>
 
+<!-- Template do PDF (oculto) -->
+<div id="pdf-content" style="display: block; font-family: Arial, sans-serif; font-size: 12px; padding: 0px 20px 20px 20px;">
+  <table style="width: 97%; border-collapse: collapse; margin: 0 auto;">
+     <tbody>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Departamento</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-departamento"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Delegacia Seccional</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-seccional"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Unidade da Ocorrência</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-delegacia"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Nome da Operação</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-operacao"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Data da Ocorrência</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-data"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Número do RDO</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-rdo"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Número do Inquérito Policial</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-inquerito"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Endereço da Ocorrência</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-endereco"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Objetivo da Ocorrência</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-objetivo"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Efetivo Utilizado</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-efetivo"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Total de Viaturas</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-viaturas"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Mandados de Busca</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-mandados-busca"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Mandados de Prisão</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-mandados-prisao"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Prisão Realizada / Natureza Jurídica</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-prisoes"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Apreensões (drogas em gramas)</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-apreensoes"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Veículos Recuperados</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-veiculos"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #000; padding: 5px;">Outros</td>
+        <td style="border: 1px solid #000; padding: 5px;" id="pdf-outros"></td>
+      </tr>
+<tr>
+  <td colspan="2" style="border: 1px solid #000; padding: 5px; text-align: CENTER;"><strong>RESENHA DA OCORRÊNCIA</strong></td>
+</tr>
+<tr>
+  <td colspan="2" style="padding: 0px;">
+    <div id="pdf-resenha">
+      <!-- Resenha será inserida aqui -->
+    </div>
+  </td>
+</tr>
+    </tbody>
+  </table>
+<div id="pdf-fotos-container">
+  <h3 id="pdf-fotos-titulo" style="text-align: center;">Fotos da Operação</h3>
+  <div id="pdf-fotos">
 
-<script src="https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.min.js"></script>
-<script src="script.js" defer></script>
+  </div>
+</div>
+
+
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.min.js"></script>
+
+
+<script src="script.js"></script>
+
 </body>
 </html>
 
