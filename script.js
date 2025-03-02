@@ -891,37 +891,191 @@ async function preencherFotosPDF(resenhaId) {
 
 
 async function gerarPDF() {
-  const htmlContent = document.getElementById("pdf-content").outerHTML;
+  const { PDFDocument, rgb, StandardFonts } = PDFLib;
+  preencherTemplatePDF(); 
+  // Aguarda o DOM atualizar
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-  const response = await fetch("https://gerar-pdf-sand.vercel.app/api/gerar-pdf", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html: htmlContent }),
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([595.28, 841.89]); // A4 em pontos
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontSize = 10;
+  const margin = 40;
+  const labelWidth = 180;
+  const valueWidth = 340;
+  const startX = margin;
+  let currentY = page.getHeight() - margin - 100; // Posição inicial após o cabeçalho
+  const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+  // Cabeçalho
+  const headerText = [
+    "SECRETARIA DA SEGURANÇA PÚBLICA",
+    "POLÍCIA CIVIL DO ESTADO DE SÃO PAULO",
+    "Delegacia Geral de Polícia Adjunta - DGPAD",
+    "Assistência Policial de Comunicação Social - APCS"
+  ];
+
+  headerText.forEach((text, index) => {
+    page.drawText(text, {
+      x: margin,
+      y: page.getHeight() - (margin + index * 12),
+      size: fontSize,
+      font,
+      color: rgb(0, 0, 0)
+    });
   });
 
-  if (response.ok) {
-    const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "relatorio.pdf";
-    link.click();
-  } else {
-    console.error("Erro ao gerar PDF:", await response.json());
-  }
-}
-
-
-
-// Função auxiliar para converter uma imagem em Base64
-async function getImageBase64(url) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
+  // Linha abaixo do cabeçalho
+  page.drawLine({
+    start: { x: margin, y: page.getHeight() - (margin + 60) },
+    end: { x: page.getWidth() - margin, y: page.getHeight() - (margin + 60) },
+    thickness: 1,
+    color: rgb(0, 0, 0)
   });
+
+  // Função para dividir texto em múltiplas linhas
+  const splitTextIntoLines = (text, maxWidth) => {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+      if (testWidth <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+
+  // Função para desenhar uma célula com quebra de linha
+  const drawCell = (x, y, width, textLines, lineHeight, align = 'left') => {
+    const cellHeight = textLines.length * lineHeight + 4; // Altura com padding
+
+    // Desenha a borda da célula
+    page.drawRectangle({
+      x,
+      y: y - cellHeight + 4,
+      width,
+      height: cellHeight,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.5
+    });
+
+    // Desenha o texto
+    textLines.forEach((line, index) => {
+      let textX = x + 5; // Padding à esquerda
+      if (align === 'center') {
+        const textWidth = font.widthOfTextAtSize(line, fontSize);
+        textX = x + (width - textWidth) / 2;
+      }
+      page.drawText(line, {
+        x: textX,
+        y: y - (index * lineHeight) - 10,
+        size: fontSize,
+        font
+      });
+    });
+
+    return cellHeight; // Retorna a altura da célula para ajustar a próxima linha
+  };
+
+  // Dados da tabela
+  const fields = [
+    ["Departamento", "pdf-departamento"],
+    ["Delegacia Seccional", "pdf-seccional"],
+    ["Unidade da Ocorrência", "pdf-delegacia"],
+    ["Nome da Operação", "pdf-operacao"],
+    ["Data da Ocorrência", "pdf-data"],
+    ["Número do RDO", "pdf-rdo"],
+    ["Número do Inquérito Policial", "pdf-inquerito"],
+    ["Endereço da Ocorrência", "pdf-endereco"],
+    ["Objetivo da Ocorrência", "pdf-objetivo"],
+    ["Efetivo Utilizado", "pdf-efetivo"],
+    ["Total de Viaturas", "pdf-viaturas"],
+    ["Mandados de Busca", "pdf-mandados-busca"],
+    ["Mandados de Prisão", "pdf-mandados-prisao"],
+    ["Prisão Realizada / Natureza Jurídica", "pdf-prisoes"],
+    ["Apreensões (drogas em gramas)", "pdf-apreensoes"],
+    ["Veículos Recuperados", "pdf-veiculos"],
+    ["Outros", "pdf-outros"]
+  ];
+
+  const lineHeight = 14;
+
+  // Desenha as células da tabela com quebra de linha automática
+  fields.forEach(([label, elementId]) => {
+  const element = document.getElementById(elementId);
+  const cleanText = (text) => {
+  return text
+    .replace(/[\n\r\t\f\v\u00A0]+/g, ' ')  // Remove quebras de linha, tabs e espaços especiais
+    .replace(/\s{2,}/g, ' ')               // Remove espaços consecutivos
+    .trim();
+};
+
+  const value = element?.innerText ? cleanText(element.innerText) : " - ";
+  const labelLines = splitTextIntoLines(cleanText(label), labelWidth - 10);
+  const valueLines = splitTextIntoLines(value, valueWidth - 10);
+
+  const labelCellHeight = drawCell(startX, currentY, labelWidth, labelLines, lineHeight);
+  const valueCellHeight = drawCell(startX + labelWidth, currentY, valueWidth, valueLines, lineHeight);
+
+  const maxCellHeight = Math.max(labelCellHeight, valueCellHeight);
+  currentY -= maxCellHeight;
+});
+
+
+
+  // Resenha da Ocorrência
+  currentY -= 10;
+  page.drawRectangle({
+    x: startX,
+    y: currentY - 24,
+    width: labelWidth + valueWidth,
+    height: 24,
+    borderColor: rgb(0, 0, 0),
+    borderWidth: 0.5,
+    color: rgb(0.9, 0.9, 0.9)
+  });
+
+  page.drawText("RESENHA DA OCORRÊNCIA", {
+    x: startX + 5,
+    y: currentY - 12,
+    size: fontSize + 1,
+    font
+  });
+
+  currentY -= 28;
+  const resenha = document.getElementById("pdf-resenha")?.innerText.trim() || " - ";
+  const resenhaLines = splitTextIntoLines(resenha, labelWidth + valueWidth - 10);
+
+  const resenhaHeight = drawCell(startX, currentY, labelWidth + valueWidth, resenhaLines, lineHeight);
+  currentY -= resenhaHeight + 10;
+
+  // Rodapé com data e número da página
+  page.drawText(`Data: ${dataAtual}`, { x: margin, y: 30, size: fontSize, font });
+  page.drawText(`Página 1 de 1`, { x: page.getWidth() - margin - 60, y: 30, size: fontSize, font });
+
+  // Salvar PDF
+  const pdfBytes = await pdfDoc.save();
+  downloadPDF(pdfBytes, `${document.getElementById("pdf-operacao").innerText.trim() || "Documento"}.pdf`);
 }
+
+// Função para baixar o PDF
+function downloadPDF(bytes, filename) {
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
 
 
 function getImageDimensions(base64) {
@@ -934,6 +1088,17 @@ function getImageDimensions(base64) {
   });
 }
 
+
+// 🔄 Função para converter a imagem local em Base64
+async function getImageBase64(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // Ajuda com CORS (se necessário)
+    img.onload = () => resolve(getBase64FromImage(img));
+    img.onerror = () => reject(new Error('Erro ao carregar a imagem.'));
+    img.src = url;
+  });
+}
 
 // 🔄 Converte um elemento de imagem HTML para Base64
 function getBase64FromImage(img) {
@@ -950,5 +1115,4 @@ function getBase64FromImage(img) {
 
 // Listener para o botão
 document.getElementById("gerar-pdf").addEventListener("click", gerarPDF);
-
 
