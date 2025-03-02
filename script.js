@@ -46,7 +46,13 @@ $(document).ready(function () {
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // 🔹 Captura o conteúdo HTML da tabela de dados
-            const pdfContent = document.getElementById("pdf-content").outerHTML;
+            const pdfContentEl = document.getElementById("pdf-content");
+
+            // 🔹 Exibir temporariamente o conteúdo antes de capturar
+            pdfContentEl.style.display = "block";
+
+            // 🔹 Captura o HTML da tabela de dados
+            const pdfContent = pdfContentEl.outerHTML;
 
             // 🔹 Captura o nome da operação para nomear o arquivo PDF
             const nomeOperacao = document.getElementById("pdf-operacao").innerText.trim() || "Documento";
@@ -157,6 +163,11 @@ $(document).ready(function () {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
+
+            // 🔹 Ocultar o conteúdo novamente após um curto intervalo
+            setTimeout(() => {
+                pdfContentEl.style.display = "none";
+            }, 1000);
 
             // Finaliza a barra de progresso e exibe mensagem de sucesso
             clearInterval(progressInterval);
