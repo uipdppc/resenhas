@@ -29,7 +29,16 @@
  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
  
+
   <style>
     .register .nav-tabs .nav-link:hover {
       border: none;
@@ -103,34 +112,63 @@
       color: #ffffff;
       border-color: #245996;
     }
-  /* Impede que o contêiner de fotos seja quebrado entre páginas */
-  .no-break {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-  /* Configura as imagens para que não sejam quebradas */
-  #pdf-fotos img {
-    display: inline-block;
-    max-width: 100%;
-    margin: 5px;
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-  /* Se as imagens estiverem muito grandes, você pode forçar uma altura máxima */
-  #pdf-fotos img {
-    max-height: 7in; /* ajuste conforme necessário */
-    object-fit: contain;
-  }
+
+
+#pdf-content {
+  padding: 0px 20px 20px 20px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+th, td {
+  
+  padding: 10px;
+  word-wrap: break-word;
+  box-sizing: border-box; /* Garante que padding não quebre a borda */
+}
 
 #pdf-resenha {
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  word-wrap: break-word;
   line-height: 1.5;
-  word-break: break-word;
-  padding-bottom: 20px;  /* Espaço extra no final */
-  page-break-inside: auto; 
-  break-inside: auto;
+  width: 100%;             /* Faz o div ocupar toda a célula */
+  box-sizing: border-box;  /* Previne que o padding quebre a borda */
+  margin: 0;               /* Remove qualquer margem que possa empurrar a borda */
+  padding: 5px;              /* Controle total com a célula (td) */
+  border: 1px solid #000; /* Força a aplicação das bordas */
 }
+
+#pdf-fotos-wrapper {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  display: block;
+  width: 100%;
+}
+
+#pdf-fotos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+#pdf-fotos img {
+  max-width: 400px;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  margin-bottom: 10px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+
 
 
   </style>
@@ -298,6 +336,10 @@
 
   		<div class="form-group">
 		<input type="button" id="gerar-pdf" class="btnSubmit btn-block" value="Gerar PDF - Formulário Operação">
+<p id="status-pdf" style="font-weight: bold; text-align: center;"></p>
+<div id="progress-bar-container" style="width: 100%; background-color: #ddd; display: none;">
+    <div id="progress-bar" style="width: 0%; height: 10px; background-color: #28a745;"></div>
+</div>
 		</div>
               </form>
               <br>
@@ -324,8 +366,8 @@
     </div>
 
 <!-- Template do PDF (oculto) -->
-<div id="pdf-content" style="display: none; font-family: Arial, sans-serif; font-size: 12px; padding: 0px 20px 20px 20px;">
-  <table style="width: 100%; border-collapse: collapse; margin-top: 0;">
+<div id="pdf-content" style="display: block; font-family: Arial, sans-serif; font-size: 12px; padding: 0px 20px 20px 20px;">
+  <table style="width: 97%; border-collapse: collapse; margin: 0 auto;">
      <tbody>
       <tr>
         <td style="border: 1px solid #000; padding: 5px;">Departamento</td>
@@ -399,25 +441,31 @@
   <td colspan="2" style="border: 1px solid #000; padding: 5px; text-align: CENTER;"><strong>RESENHA DA OCORRÊNCIA</strong></td>
 </tr>
 <tr>
-  <td colspan="2" style="border: 1px solid #000; padding: 5px;">
-    <div id="pdf-resenha" style="white-space: pre-wrap; overflow-wrap: break-word; line-height: 1.5;">
+  <td colspan="2" style="padding: 0px; border: 1px solid #000;">
+    <div id="pdf-resenha">
+      <!-- Resenha será inserida aqui -->
+    </div>
   </td>
 </tr>
     </tbody>
   </table>
-<div id="pdf-fotos-container" style="margin-top: 20px; text-align: center; page-break-inside: avoid; break-inside: avoid;">
-  <h3 id="pdf-fotos-titulo" style="text-align: center; margin-bottom: 10px;">Fotos da Operação</h3>
-  <div id="pdf-fotos"></div>
+<div id="pdf-fotos-container">
+  <h3 id="pdf-fotos-titulo" style="text-align: center;">Fotos da Operação</h3>
+  <div id="pdf-fotos">
+
+  </div>
+</div>
+
+
 
     
-
-</div>
 
 
 
     <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.min.js"></script>
 
-    <script src="script.js"></script>
+
+<script src="script.js" defer></script>
 
 </body>
 </html>
