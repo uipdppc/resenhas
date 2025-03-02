@@ -112,7 +112,7 @@ $(document).ready(function () {
 
                         #pdf-fotos img {
                             max-width: 80%;
-                            max-height: 500px;
+                            max-height: 700px;
                             width: auto;
                             height: auto;
                             display: block;
@@ -1044,44 +1044,6 @@ async function preencherFotosPDF(resenhaId) {
   } catch (error) {
     console.error("Erro ao preencher fotos no PDF:", error);
   }
-}
-
-
-
-
-// Função auxiliar para converter uma imagem em Base64
-async function getImageBase64(url) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-}
-
-
-function getImageDimensions(base64) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = base64;
-    img.onload = () => {
-      resolve({ width: img.width, height: img.height });
-    };
-  });
-}
-
-
-// 🔄 Converte um elemento de imagem HTML para Base64
-function getBase64FromImage(img) {
-  const canvas = document.createElement('canvas');
-  canvas.width = img.width;
-  canvas.height = img.height;
-
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-
-  return canvas.toDataURL('image/png');
 }
 
 
