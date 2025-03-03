@@ -31,14 +31,74 @@
     button:hover { 
       background-color: #45a049; 
     }
+.email-container, input {
+  height: 50px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 50px;
+}
+
+.email-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: white;
+}
+
+.email-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  padding: 0px;
+  height: 100%;
+  font-size: 16px;
+}
+
+.email-container span {
+  font-size: 16px;
+  color: #555;
+  padding: 10px;
+  background: #f3f3f3;
+  white-space: nowrap;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustes para mobile */
+@media screen and (max-width: 480px) {
+  .email-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .email-container input {
+    width: 100%;
+    text-align: center;
+  }
+
+  .email-container span {
+    width: 100%;
+    text-align: center;
+  }
+}
+
   </style>
 </head>
 <body>
 
   <h2>🔒 Login</h2>
   <!-- O usuário digita apenas a parte inicial do email -->
+  <div class="email-container">
   <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
-  <p><strong>@policiacivil.sp.gov.br</strong></p>
+  <span>@policiacivil.sp.gov.br</span>
+  </div>
   <input type="password" id="senha" placeholder="Senha" required>
   <button onclick="login()">Entrar</button>
 

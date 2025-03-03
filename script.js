@@ -535,14 +535,15 @@ async function buscarRDO() {
   }
 
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?rdo=eq.${rdo}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${token}`
-      }
-    });
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/resenhas?rdo=eq.${rdo}&order=created_at.asc`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${token}`,
+    "Prefer": "return=representation"  // 🔑 Retorna os dados inseridos
+  }
+});
 
     if (!response.ok) {
       throw new Error(`Erro ao buscar RDO: ${response.status}`);
@@ -665,32 +666,36 @@ const token = await getAuthToken();
 }
 
 
-
-
 // 📝 Função para exibir múltiplas opções com indicação de anexos
 async function mostrarOpcoes(registros) {
-const token = await getAuthToken();
+    const token = await getAuthToken();
     const modal = document.getElementById('resultadoModal');
     const lista = document.getElementById('resultadoLista');
     lista.innerHTML = '';
 
+    // 🔥 Ordena do mais novo para o mais antigo (baseado no created_at)
+    registros.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // 🔥 Agora ordena do mais antigo para o mais novo
+
+    let index = 1; // Contador para a numeração correta
+
     for (const registro of registros) {
+        // 🔎 Aguarda a verificação de anexos e operação corretamente
         const [anexos, operacao] = await Promise.all([
             temAnexos(registro.id),  // 📎 Verifica anexos
             temOperacao(registro.id) // 📋 Verifica operação
         ]);
 
-        const statusAnexos = anexos ? "📎 Com Anexos" : "❌ Sem Anexos"; //
-	const statusOperacao = operacao ? " | 📋 Com Operação" : ""; // Exibe apenas se tiver operação
+        const statusAnexos = anexos ? "📎 Com Anexos" : "❌ Sem Anexos"; 
+        const statusOperacao = operacao ? " | 📋 Com Operação" : ""; 
 
         const li = document.createElement('li');
         li.style.cursor = 'pointer';
         li.style.marginBottom = '5px';
         li.innerHTML = `
-            <strong>${registro.rdo}</strong> - ${registro.delegacia || 'Sem delegacia'} |
+            <strong>${index}.</strong> <strong>${registro.rdo}</strong> - ${registro.delegacia || 'Sem delegacia'} |
             ${registro.data ? registro.data.split('T')[0].split('-').reverse().join('/') : 'Data não disponível'} |
             <span style="font-weight:bold; color:${anexos ? 'green' : 'red'};">${statusAnexos}</span>
-	    ${operacao ? `<span style="font-weight:bold; color:blue;">${statusOperacao}</span>` : ''}
+            ${operacao ? `<span style="font-weight:bold; color:blue;">${statusOperacao}</span>` : ''}
         `;
         li.onclick = () => {
             localStorage.setItem('resenha_id', registro.id);  // 🔑 Salva o ID
@@ -700,10 +705,13 @@ const token = await getAuthToken();
         };
 
         lista.appendChild(li); // ➕ Adiciona ao modal
+        index++; // Incrementa o número do item
     }
 
     modal.style.display = 'block'; // 🔓 Exibe o modal
 }
+
+
 // 🔹 Nova função para processar o formulário e copiar para a área de transferência
 document.getElementById("resenhaForm").addEventListener("submit", function(event) {
     event.preventDefault(); // 🚫 Impede recarregamento da página
@@ -1057,8 +1065,32 @@ async function preencherFotosPDF(resenhaId) {
   }
 }
 
+async function logout() {
+    const { error } = await supabaseClient.auth.signOut();
+    
+    if (error) {
+        console.error("Erro ao sair:", error.message);
+        alert("❌ Erro ao fazer logout. Tente novamente.");
+        return;
+    }
 
-// Listener para o botão
-//document.getElementById("gerar-pdf").addEventListener("click", gerarPDF);
+    // Redireciona para a tela de login
+    alert("✅ Logout realizado com sucesso!");
+    window.location.href = "login.html";
+}
+
+async function carregarUsuario() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (user) {
+        document.getElementById("user-info").innerHTML = `Logado como: <strong>${user.email}</strong>`;
+    } else {
+        document.getElementById("user-info").innerHTML = `Usuário não identificado`;
+    }
+}
+
+// Chama a função ao carregar a página
+carregarUsuario();
+
 
 

@@ -6,11 +6,12 @@
   <style>
     body { 
       font-family: Arial, sans-serif; 
-      max-width: 400px; 
+      max-width: 400px; /* Mantém um limite para telas maiores */
       margin: auto; 
-      padding: 50px; 
+      padding: 20px; 
       text-align: center; 
     }
+
     input { 
       width: 100%; 
       padding: 10px; 
@@ -31,6 +32,76 @@
       margin-top: 15px; 
       font-weight: bold; 
     }
+.email-container, input {
+  height: 50px; /* Define uma altura padrão para todos os campos */
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box; /* Evita que padding aumente o tamanho do campo */
+line-height: 50px;
+}
+
+.email-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: white;
+  
+}
+
+.email-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  padding: 0px;
+  height: 100%; /* Garante que o input tenha a mesma altura do contêiner */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.email-container span {
+  font-size: 14px;
+  color: #555;
+  padding: 10px;
+  background: #f3f3f3;
+  white-space: nowrap;
+  height: 100%; /* Mantém a altura igual ao input */
+  display: flex;
+  align-items: center;
+justify-content: center;
+}
+
+/* Ajustes para telas menores */
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px; /* Reduz ainda mais o espaço lateral no celular */
+  }
+
+  .container {
+    width: 100%; /* Faz com que o formulário ocupe toda a largura */
+    max-width: 100%; 
+    padding: 10px;
+  }
+
+  .email-container {
+    flex-direction: column; /* Faz o domínio aparecer abaixo do input */
+  }
+
+  .email-container input {
+    width: 100%;
+    text-align: center;
+  }
+
+  .email-container span {
+    width: 100%;
+    text-align: center;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -39,9 +110,10 @@
   
   <h2>📝 Cadastro de Usuário</h2>
   <!-- O usuário digita apenas a parte inicial do email -->
+  <div class="email-container">
   <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
-  <!-- Exibe o domínio fixo -->
-  <p><strong>@policiacivil.sp.gov.br</strong></p>
+  <span>@policiacivil.sp.gov.br</span>
+  </div>
   <input type="password" id="senha" placeholder="Senha" required>
   <input type="password" id="confirmaSenha" placeholder="Confirme a senha" required>
   <button onclick="cadastrarUsuario()">Cadastrar</button>
