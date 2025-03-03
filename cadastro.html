@@ -35,6 +35,17 @@
     }
 
 
+/* Estilo global para inputs que não fazem parte de um container customizado */
+input:not(.no-global) { 
+  width: 100%; 
+  padding: 10px; 
+  margin: 10px 0; 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilo específico para o container de email */
 .email-container {
   display: flex;
   align-items: center;
@@ -64,40 +75,24 @@
   justify-content: center;
 }
 
-input[type="password"] {
-   border: 1px solid #ccc;
-   border-radius: 5px;
-   padding: 10px;
-   width: 100%;
-   box-sizing: border-box;
-}
+/* Caso queira manter o estilo do email-container apenas para o campo de e-mail, 
+   marque-o com uma classe e exclua-o do input global. */
 
-/* Ajustes para telas menores */
+
 @media screen and (max-width: 480px) {
-  body {
-    padding: 10px; /* Reduz ainda mais o espaço lateral no celular */
-  }
-
-  .container {
-    width: 100%; /* Faz com que o formulário ocupe toda a largura */
-    max-width: 100%; 
-    padding: 10px;
-  }
-
   .email-container {
-    flex-direction: column; /* Faz o domínio aparecer abaixo do input */
+    /* flex-wrap: wrap;  <-- Remova isto para não quebrar a linha */
+    /* Caso ainda quebre, tente forçar: */
+    flex-wrap: nowrap;
+    white-space: nowrap; /* Força tudo a ficar numa só linha */
   }
-
-  .email-container input {
-    width: 100%;
-    text-align: center;
-  }
-
+  
+  .email-container input,
   .email-container span {
-    width: 100%;
-    text-align: center;
+    font-size: 12px; /* Diminuir a fonte para caber melhor */
   }
 }
+
 
   </style>
 </head>
