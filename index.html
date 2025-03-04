@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GERADOR DE RESENHAS ONLINE</title>
+  <title>RESENHAS E OPERAÇÕES</title>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
   <!-- Google tag (gtag.js) -->
@@ -29,180 +29,7 @@
  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
 
-
-  <style>
-    .register .nav-tabs .nav-link:hover {
-      border: none;
-    }
-    .text-align {
-      margin-top: 0;
-      margin-bottom: 15%;
-      margin-left: 30%;
-    }
-    .form-new {
-      margin-right: 10%;
-      margin-left: 10%;
-    }
-    .register-heading {
-      position: relative;
-      width: 360px;
-      margin: auto;
-      margin-bottom: 5%;
-      color: #000000;
-    }
-    .register-heading h1 {
-      margin-left: 20%;
-      margin-bottom: 10%;
-      color: #e9ecef;
-    }
-    .form-control {
-      display: block;
-      width: 100%;
-      padding: 0.375rem 0.75rem;
-      font-size: 1rem;
-      line-height: 1.5;
-      background-clip: padding-box;
-      border: 2px solid #ced4da;
-      border-radius: 1.25rem;
-      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    }
-    .register {
-      background-image: url("img/bg_barra_circulos.jpg");
-      margin: auto;
-      padding: 1%;
-      border-radius: 2.5rem;
-    }
-    .btnSubmit {
-      width: 50%;
-      border-radius: 1rem;
-      padding: 1.5%;
-      background-color: #000000;
-      border: none;
-      cursor: pointer;
-      margin-right: 6%;
-      color: rgb(246, 246, 252);
-      margin-top: 4%;
-    }
-    .input-group {
-      display: flex;
-      width: 100%;
-    }
-    .input-group .form-control {
-      border-radius: 1.25rem 0 0 1.25rem;
-    }
-    .input-group .btnBuscar {
-      border-radius: 0 1.25rem 1.25rem 0;
-      background-color: #000000;
-      color: #f6f6fc;
-      padding: 0.375rem 1rem;
-      border: 2px solid #ced4da;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    .input-group .btnBuscar:hover {
-      background-color: #245996;
-      color: #ffffff;
-      border-color: #245996;
-    }
-
-
-#pdf-content {
-  padding: 0px 20px 20px 20px;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-th, td {
-  
-  padding: 10px;
-  word-wrap: break-word;
-  box-sizing: border-box; /* Garante que padding não quebre a borda */
-}
-
-#pdf-resenha {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  line-height: 1.5;
-  width: 100%;             /* Faz o div ocupar toda a célula */
-  box-sizing: border-box;  /* Previne que o padding quebre a borda */
-  margin: 0;               /* Remove qualquer margem que possa empurrar a borda */
-  padding: 5px;              /* Controle total com a célula (td) */
-  border: 1px solid #000; /* Força a aplicação das bordas */
-}
-
-#pdf-fotos-wrapper {
-  page-break-inside: avoid;
-  break-inside: avoid;
-  display: block;
-  width: 100%;
-}
-
-#pdf-fotos {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-#pdf-fotos img {
-  max-width: 400px;
-  max-height: 500px;
-  width: auto;
-  height: auto;
-  margin-bottom: 10px;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: transparent;
-    padding: 5px 20px;
-    font-size: 14px;
-}
-
-.logout-small {
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.logout-small:hover {
-    background: darkred;
-}
-
-
-
-
-
-
-  </style>
-
-  <script>
-    const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Verifica se há uma sessão ativa
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        alert("⚠️ Faça login primeiro.");
-        window.location.href = "login.html";
-      }
-    });
-  </script>
+<link rel="stylesheet" href="css/styles.css"> 
 
 </head>
 
@@ -211,7 +38,7 @@ th, td {
     <div class="row">
       <div class="col-md-12">
         <div class="tab-pane fade show active text-align form-new" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <h3 class="register-heading text-nowrap">GERADOR DE RESENHAS</h3>
+          <h3 class="register-heading text-nowrap">RESENHAS E OPERAÇÕES</h3>
           <div class="row register-form">
             <div class="col-md-12">
               <form id="resenhaForm">
@@ -292,86 +119,140 @@ th, td {
                 </div>
 
                 <div class="form-group">
-                  <label>
-                    <input type="checkbox" name="eh_operacao" id="isOperacao" onchange="toggleOperacaoFields()"> É uma Operação Policial?
-                  </label>
-                </div>
-
-                <div id="operacaoFields" style="display: none; border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-top: 15px;">
-                  <h5>Informações da Operação</h5>
-                  <!-- Campos de operação -->
-                  <div class="form-group">
-                    <label>Nome da Operação:</label>
-                    <input type="text" class="form-control" name="nome_operacao" placeholder="Nome da Operação">
-                  </div>
-                  <div class="form-group">
-                    <label>Número do Inquérito Policial:</label>
-                    <input type="text" class="form-control" name="numero_inquerito" placeholder="Número do Inquérito">
-                  </div>
-                  <div class="form-group">
-                    <label>Objetivo da Operação:</label>
-                    <input type="text" class="form-control" name="objetivo_operacao" placeholder="Objetivo">
-                  </div>
-                  <div class="form-group">
-                    <label>Efetivo Utilizado na Operação:</label>
-                    <input type="text" class="form-control" name="efetivo_operacao" placeholder="Ex: 10 policiais">
-                  </div>
-                  <div class="form-group">
-                    <label>Total de Viaturas Utilizadas na Operação:</label>
-                    <input type="number" class="form-control" name="viaturas_utilizadas" placeholder="Número de viaturas">
-                  </div>
-                  <div class="form-group">
-                    <label>Quantidade de Mandados de Busca e Apreensão:</label>
-                    <input type="number" class="form-control" name="mandados_busca" placeholder="Quantidade">
-                  </div>
-                  <div class="form-group">
-                    <label>Quantidade de Mandados de Prisão:</label>
-                    <input type="number" class="form-control" name="mandados_prisao" placeholder="Quantidade">
-                  </div>
-                  <div class="form-group">
-                    <label>Prisões Realizadas/Natureza Jurídica/Procurado:</label>
-                    <textarea class="form-control" name="prisoes_realizadas" placeholder="Ex: 2 prisões preventivas, 1 procurado capturado"></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label>Quantidade/Descrição das Apreensões (Drogas em gramas):</label>
-                    <textarea class="form-control" name="apreensoes" placeholder="Ex: 500g de cocaína, 1 arma de fogo"></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label>Veículos Recuperados:</label>
-                    <textarea class="form-control" name="veiculos_recuperados" placeholder="Ex: 2 motocicletas, 1 carro"></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label>Outros:</label>
-                    <textarea class="form-control" name="outros" placeholder="Outras informações relevantes"></textarea>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="fotoUpload">📷 Upload de Fotos:</label>
-                  <input type="file" class="form-control" id="fotoUpload" multiple accept="image/*">
-                  <input type="button" class="btnSubmit btn-block" value="📤 Enviar Fotos" onclick="uploadFotos()">
-                </div>
-
-                <div id="fotosPreview" style="margin-top: 10px;"></div>
-
-                <div class="form-group">
-                  <input type="button" class="btnSubmit btn-block" value="🧹 Limpar Formulário" onclick="resetFormulario()">
-                </div>
-
-                <div class="form-group">
-                  <input type="submit" class="btnSubmit btn-block" value="Gerar Resenha e Salvar">
-                </div>
-
-  		<div class="form-group">
-		<input type="button" id="gerar-pdf" class="btnSubmit btn-block" value="Gerar PDF - Formulário Operação">
-<p id="status-pdf" style="font-weight: bold; text-align: center;"></p>
-<div id="progress-bar-container" style="width: 100%; background-color: #ddd; display: none;">
-    <div id="progress-bar" style="width: 0%; height: 10px; background-color: #28a745;"></div>
+  <label class="switch-container">
+    <input type="checkbox" name="eh_operacao" id="isOperacao" onchange="toggleOperacaoFields()">
+    <span class="slider round"></span>
+    <span class="checkbox-label">Marcar se for uma Operação Policial</span>
+  </label>
 </div>
-		</div>
+
+
+
+ <div id="operacaoFields" style="display: none; padding: 15px; border-radius: 8px; margin-top: 15px; ">
+  <h5 style="margin-bottom: 15px;">Informações da Operação</h5>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Nome da Operação</label>
+      <input type="text" class="form-control" name="nome_operacao" placeholder="Ex: Operação Fênix" onblur="this.value = capitalizeWords(this.value)">
+    </div>
+
+    <div class="form-group">
+      <label>Número do Inquérito</label>
+      <input type="text" class="form-control" name="numero_inquerito" placeholder="Ex: 123456/2024" onblur="this.value = capitalizeWords(this.value)">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Objetivo da Operação</label>
+    <input type="text" class="form-control" name="objetivo_operacao" placeholder="Ex: Repressão ao tráfico de drogas" onblur="this.value = capitalizeWords(this.value)">
+  </div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Efetivo Utilizado</label>
+      <input type="text" class="form-control" name="efetivo_operacao" placeholder="Ex: 10 policiais" onblur="this.value = capitalizeWords(this.value)">
+    </div>
+
+    <div class="form-group">
+      <label>Total de Viaturas</label>
+      <input type="number" class="form-control" name="viaturas_utilizadas" placeholder="Ex: 5">
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Mandados de Busca</label>
+      <input type="number" class="form-control" name="mandados_busca" placeholder="Ex: 3">
+    </div>
+
+    <div class="form-group">
+      <label>Mandados de Prisão</label>
+      <input type="number" class="form-control" name="mandados_prisao" placeholder="Ex: 2">
+    </div>
+  </div>
+
+<div class="form-group">
+  <label>Prisões Realizadas / Procurados:</label>
+  <div class="tags-wrapper">
+    <div id="tagsPrisoes" class="tags-container">
+      <input
+        type="text"
+        class="form-control input-tags"
+        id="inputPrisoes"
+        placeholder="Ex: 2 prisões preventivas - Digite e pressione Enter"
+	onblur="onInputBlur(event, 'prisoes')"
+      />
+    </div>
+    <button type="button" class="btn-add" onclick="adicionarTag('prisoes')">➕</button>
+  </div>
+</div>
+
+
+
+<!-- Apreensões -->
+<div class="form-group">
+  <label>Apreensões (Drogas, Armas, Outros):</label>
+  <div class="tags-wrapper">
+    <div class="tags-container" id="tagsApreensoes">
+   <input type="text" class="form-control input-tags" id="inputApreensoes" placeholder="Ex: 500g de cocaína, 2 armas - Digite e pressione Enter" onblur="onInputBlur(event, 'apreensoes')">
+    </div>
+    <button type="button" class="btn-add" onclick="adicionarTag('apreensoes')">➕</button>
+  </div>
+</div>
+
+<!-- Veículos Recuperados -->
+<div class="form-group">
+  <label>Veículos Recuperados:</label>
+  <div class="tags-wrapper">
+    <div class="tags-container" id="tagsVeiculos">
+      <input type="text" class="form-control input-tags" id="inputVeiculos" placeholder="Ex: 2 veículos, 1 moto - Digite e pressione Enter" onblur="onInputBlur(event, 'veiculos')">
+    </div>
+    <button type="button" class="btn-add" onclick="adicionarTag('veiculos')">➕</button>
+  </div>
+</div>
+
+
+
+
+
+  <div class="form-group">
+    <label>Outras Informações</label>
+    <textarea class="form-control" name="outros" placeholder="Detalhes adicionais da operação"></textarea>
+  </div>
+</div>
+
+
+<div class="form-group">
+  <label for="fotoUpload">📷 Upload de Fotos:</label>
+  <input type="file" class="form-control" id="fotoUpload" multiple accept="image/*">
+  <input type="button" class="btnSubmit btn-upload" value="📤 Enviar Fotos" onclick="uploadFotos()">
+</div>
+
+<div id="fotosPreview" style="margin-top: 10px;"></div>
+
+<div class="form-group">
+  <input type="button" class="btnSubmit btn-clear" value="🧹 Limpar Formulário" onclick="resetFormulario()">
+</div>
+
+<div class="form-group">
+  <input type="submit" class="btnSubmit" value="💾 Gerar Resenha e Salvar">
+</div>
+
+<div class="form-group">
+  <input type="button" id="gerar-pdf" class="btnSubmit btn-pdf" value="📄 Gerar PDF - Formulário Operação">
+  <p id="status-pdf" style="font-weight: bold; text-align: center;"></p>
+  <div id="progress-bar-container">
+    <div id="progress-bar"></div>
+  </div>
+</div>
+
+
+
+
               </form>
               <br>
-              <div id="resultado" style="border: solid black 2px;">
+              <div id="resultado" style="border: solid black 1px; border-radius: 8px;">
                 <p><b>*Polícia Civil*</b></p>
                 <p><b id="departamento"></b></p>
                 <p><b id="seccional"></b></p>
@@ -385,8 +266,19 @@ th, td {
                 <p id="historico"></p>
               </div>
               <div class="form-group">
-                <input type="button" class="btnSubmit btn-block" value="Encaminhar via WhatsApp" onclick="gotowhatsapp()">
-              </div>
+  <button
+  type="button"
+  class="btnSubmit btn-upload"
+  onclick="gotowhatsapp()"
+>
+  <img
+    src="img/whatsapp-icon.svg"
+    alt="WhatsApp"
+    style="height: 20px; margin-right: 5px;"
+  />
+  Encaminhar RESENHA via WhatsApp
+</button>
+</div>
             </div>
           </div>
         </div>
@@ -494,6 +386,7 @@ th, td {
 
 
 <script src="script.js" defer></script>
+
 
 </body>
 </html>
