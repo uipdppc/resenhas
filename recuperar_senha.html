@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperação de Senha</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      max-width: 400px; 
+      margin: auto; 
+      padding: 20px; 
+      text-align: center; 
+    }
+
+    input { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button { 
+      width: 100%; 
+      padding: 10px; 
+      background-color: #4CAF50; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+    }
+
+    button:hover { 
+      background-color: #45a049; 
+    }
+
+    #status { 
+      margin-top: 15px; 
+      font-weight: bold; 
+    }
+
+    .email-container {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+      height: 50px;
+    }
+
+    .email-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .email-container span {
+      padding: 10px;
+      background: #f3f3f3;
+      font-size: 14px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔑 Recuperação de Senha</h2>
+  <p>Digite seu usuário institucional para receber um link de redefinição de senha.</p>
+
+  <div class="email-container">
+    <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
+    <span>@policiacivil.sp.gov.br</span>
+  </div>
+
+  <button onclick="recuperarSenha()">Enviar Link</button>
+  <p id="status"></p>
+  <p><a href="login.html">Voltar para o Login</a></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
+  
+  <script>
+    const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function construirEmail(userInput) {
+      return userInput.trim() + "@policiacivil.sp.gov.br";
+    }
+
+    async function recuperarSenha() {
+      const usuarioInput = document.getElementById("usuario").value.trim();
+      const status = document.getElementById("status");
+
+      if (!usuarioInput) {
+        status.innerText = "⚠️ Informe seu usuário!";
+        return;
+      }
+
+      const email = construirEmail(usuarioInput);
+
+      const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://uipdppc.github.io/recuperar_senha_confirmacao.html"
+      });
+
+      if (error) {
+        console.error("Erro na recuperação de senha:", error);
+        status.innerText = `⚠️ Erro: ${error.message}`;
+        return;
+      }
+
+      status.innerText = "✅ E-mail enviado! Verifique sua caixa de entrada.";
+    }
+
+    window.recuperarSenha = recuperarSenha;
+  </script>
+
+</body>
+</html>
+
