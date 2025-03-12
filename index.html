@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="form-group">
-                  <input type="text" name="natureza" class="form-control" placeholder="Natureza" onkeyup="this.value = this.value.toUpperCase();" required>
+                  <input type="text" name="natureza" class="form-control" placeholder="Natureza" onkeyup="this.value = this.value.toUpperCase();">
                 </div>
 
                 <div class="form-group">
@@ -107,11 +107,11 @@
                 </div>
 
                 <div class="form-group">
-                  <input type="text" name="envolvidos" class="form-control" onkeyup="this.value = this.value.toUpperCase()" placeholder="ex.: 1 PRESO, 1 ADOLESCENTE INFRATOR, 2 INDICIADOS" required>
+                  <input type="text" name="envolvidos" class="form-control" onkeyup="this.value = this.value.toUpperCase()" placeholder="ex.: 1 PRESO, 1 ADOLESCENTE INFRATOR, 2 INDICIADOS">
                 </div>
 
                 <div class="form-group">
-                  <input type="text" name="localfato" class="form-control" onkeyup="this.value = this.value.toUpperCase();" placeholder="Endereço do fato" required>
+                  <input type="text" name="localfato" class="form-control" onkeyup="this.value = this.value.toUpperCase();" placeholder="Endereço do fato">
                 </div>
 
                 <div class="form-group">
@@ -229,7 +229,17 @@
   <input type="button" class="btnSubmit btn-upload" value="📤 Enviar Fotos" onclick="uploadFotos()">
 </div>
 
-<div id="fotosPreview" style="margin-top: 10px;"></div>
+      <!-- 📂 Fotos a Enviar (Preview) -->
+      <div id="fotosPreviewContainer" style="display: none;">
+          <h3 id="fotosPreviewTitle" style="border-bottom: 2px solid #000; padding-bottom: 5px;">📂 Fotos a Enviar</h3>
+          <div id="fotosPreview" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+      </div>
+
+      <!-- 📁 Fotos Já Enviadas -->
+      <div id="fotosSalvasContainer" style="display: none;">
+          <h3 id="fotosSalvasTitle" style="border-bottom: 2px solid #000; padding-bottom: 5px;">📁 Fotos Já Enviadas</h3>
+          <div id="fotosSalvas" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+      </div>
 
 <div class="form-group">
   <input type="button" class="btnSubmit btn-clear" value="🧹 Limpar Formulário" onclick="resetFormulario()">
@@ -390,5 +400,7 @@
 
 </body>
 </html>
+
+
 
 
