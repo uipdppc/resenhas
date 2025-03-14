@@ -7,12 +7,11 @@
   <style>
     body { 
       font-family: Arial, sans-serif; 
-      max-width: 400px; /* Mantém um limite para telas maiores */
+      max-width: 400px;
       margin: auto; 
       padding: 20px; 
       text-align: center; 
     }
-
     input { 
       width: 100%; 
       padding: 10px; 
@@ -33,78 +32,63 @@
       margin-top: 15px; 
       font-weight: bold; 
     }
-
-
-/* Estilo global para inputs que não fazem parte de um container customizado */
-input:not(.no-global) { 
-  width: 100%; 
-  padding: 10px; 
-  margin: 10px 0; 
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-/* Estilo específico para o container de email */
-.email-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-  width: 100%;
-  box-sizing: border-box;
-  height: 50px;
-}
-
-.email-container input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 10px;
-  font-size: 14px;
-}
-
-.email-container span {
-  padding: 10px;
-  background: #f3f3f3;
-  font-size: 14px;
-  color: #555;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Caso queira manter o estilo do email-container apenas para o campo de e-mail, 
-   marque-o com uma classe e exclua-o do input global. */
-
-
-@media screen and (max-width: 480px) {
-  .email-container {
-    /* flex-wrap: wrap;  <-- Remova isto para não quebrar a linha */
-    /* Caso ainda quebre, tente forçar: */
-    flex-wrap: nowrap;
-    white-space: nowrap; /* Força tudo a ficar numa só linha */
-  }
-  
-  .email-container input,
-  .email-container span {
-    font-size: 12px; /* Diminuir a fonte para caber melhor */
-  }
-}
-
-
+    input:not(.no-global) { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .email-container {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+      height: 50px;
+    }
+    .email-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+    }
+    .email-container select {
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+      background: #f3f3f3;
+      color: #555;
+    }
+    @media screen and (max-width: 480px) {
+      .email-container {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+      .email-container input,
+      .email-container select {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Carregue o Supabase JS -->
+  <!-- Carrega o Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
   
   <h2>📝 Cadastro de Usuário</h2>
-  <!-- O usuário digita apenas a parte inicial do email -->
+  <!-- O usuário digita apenas a parte inicial do email e seleciona o domínio -->
   <div class="email-container">
-  <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
-  <span>@policiacivil.sp.gov.br</span>
+    <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
+    <select id="dominioEmail">
+      <option value="@policiacivil.sp.gov.br" selected>@policiacivil.sp.gov.br</option>
+      <option value="@sp.gov.br">@sp.gov.br</option>
+    </select>
   </div>
   <input type="password" id="senha" placeholder="Senha" required>
   <input type="password" id="confirmaSenha" placeholder="Confirme a senha" required>
@@ -117,9 +101,10 @@ input:not(.no-global) {
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Constrói o email completo concatenando o domínio fixo
+    // Constrói o email completo com o domínio selecionado
     function construirEmail(userInput) {
-      return userInput.trim() + "@policiacivil.sp.gov.br";
+      const dominio = document.getElementById("dominioEmail").value;
+      return userInput.trim() + dominio;
     }
 
     async function cadastrarUsuario() {
@@ -138,10 +123,8 @@ input:not(.no-global) {
         return;
       }
 
-      // Constrói o email completo
       const email = construirEmail(usuarioInput);
 
-      // Realiza o cadastro via Supabase Auth
       const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: senha
@@ -153,10 +136,8 @@ input:not(.no-global) {
         return;
       }
 
-      // Se o cadastro for imediato (sem confirmação de email), data.user estará disponível
       if (data.user) {
         const userId = data.user.id;
-        // Insere o registro na sua tabela customizada "usuarios"
         const { error: insertError } = await supabaseClient
           .from('usuarios')
           .insert([{ id: userId, username: usuarioInput, senha_hash: "", autorizado: false }]);

@@ -12,7 +12,6 @@
       padding: 20px; 
       text-align: center; 
     }
-
     input { 
       width: 100%; 
       padding: 10px; 
@@ -21,7 +20,6 @@
       border-radius: 5px;
       box-sizing: border-box;
     }
-
     button { 
       width: 100%; 
       padding: 10px; 
@@ -30,16 +28,13 @@
       border: none; 
       cursor: pointer; 
     }
-
     button:hover { 
       background-color: #45a049; 
     }
-
     #status { 
       margin-top: 15px; 
       font-weight: bold; 
     }
-
     .email-container {
       display: flex;
       align-items: center;
@@ -50,7 +45,6 @@
       box-sizing: border-box;
       height: 50px;
     }
-
     .email-container input {
       flex: 1;
       border: none;
@@ -58,42 +52,43 @@
       padding: 10px;
       font-size: 14px;
     }
-
-    .email-container span {
+    .email-container select {
+      border: none;
+      outline: none;
       padding: 10px;
-      background: #f3f3f3;
       font-size: 14px;
+      background: #f3f3f3;
       color: #555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   </style>
 </head>
 <body>
-
   <h2>🔑 Recuperação de Senha</h2>
   <p>Digite seu usuário institucional para receber um link de redefinição de senha.</p>
-
+  
+  <!-- O usuário digita a parte inicial do e-mail e escolhe o domínio -->
   <div class="email-container">
     <input type="text" id="usuario" placeholder="Seu usuário (ex.: joao.silva)" required>
-    <span>@policiacivil.sp.gov.br</span>
+    <select id="dominioEmail">
+      <option value="@policiacivil.sp.gov.br" selected>@policiacivil.sp.gov.br</option>
+      <option value="@sp.gov.br">@sp.gov.br</option>
+    </select>
   </div>
 
   <button onclick="recuperarSenha()">Enviar Link</button>
   <p id="status"></p>
   <p><a href="login.html">Voltar para o Login</a></p>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
   <script>
     const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
-    
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Constrói o e-mail completo usando o domínio selecionado
     function construirEmail(userInput) {
-      return userInput.trim() + "@policiacivil.sp.gov.br";
+      const dominio = document.getElementById("dominioEmail").value;
+      return userInput.trim() + dominio;
     }
 
     async function recuperarSenha() {
@@ -122,7 +117,6 @@
 
     window.recuperarSenha = recuperarSenha;
   </script>
-
 </body>
 </html>
 

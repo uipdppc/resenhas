@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
-
-  <!-- Carregue as bibliotecas primeiro -->
+  <!-- Carrega o Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.4/dist/umd/supabase.min.js"></script>
-
   <style>
     body { 
       font-family: Arial, sans-serif; 
@@ -32,100 +30,82 @@
     button:hover { 
       background-color: #45a049; 
     }
-
-
-/* Estilo global para inputs que não fazem parte de um container customizado */
-input:not(.no-global) { 
-  width: 100%; 
-  padding: 10px; 
-  margin: 10px 0; 
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-/* Estilo específico para o container de email */
-.email-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-  width: 100%;
-  box-sizing: border-box;
-  height: 50px;
-}
-
-.email-container input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 10px;
-  font-size: 14px;
-}
-
-.email-container span {
-  padding: 10px;
-  background: #f3f3f3;
-  font-size: 14px;
-  color: #555;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+    input:not(.no-global) { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .email-container {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+      height: 50px;
+    }
+    .email-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+    }
+    .email-container select {
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+      background: #f3f3f3;
+      color: #555;
+    }
     .register {
       background-image: url("img/bg_barra_circulos.jpg");
       margin: auto;
       padding: 1%;
       border-radius: 2.5rem;
     }
-
-
-/* Ajustes para mobile */
-@media screen and (max-width: 480px) {
-  .email-container {
-    /* flex-wrap: wrap;  <-- Remova isto para não quebrar a linha */
-    /* Caso ainda quebre, tente forçar: */
-    flex-wrap: nowrap;
-    white-space: nowrap; /* Força tudo a ficar numa só linha */
-  }
-  
-  .email-container input,
-  .email-container span {
-    font-size: 12px; /* Diminuir a fonte para caber melhor */
-  }
-}
-
-
+    @media screen and (max-width: 480px) {
+      .email-container {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+      .email-container input,
+      .email-container select {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <h2>🔒 Login</h2>
-  <!-- O usuário digita apenas a parte inicial do email -->
+  <!-- O usuário digita a parte inicial do e-mail e escolhe o domínio -->
   <div class="email-container">
-  <input type="text" id="usuario" placeholder="Usuário (ex.: joao.silva)" required>
-  <span>@policiacivil.sp.gov.br</span>
+    <input type="text" id="usuario" placeholder="Usuário (ex.: joao.silva)" required>
+    <select id="dominioEmail">
+      <option value="@policiacivil.sp.gov.br" selected>@policiacivil.sp.gov.br</option>
+      <option value="@sp.gov.br">@sp.gov.br</option>
+    </select>
   </div>
   <input type="password" id="senha" placeholder="Senha" required>
   <button onclick="login()">Entrar</button>
-
   <p id="status"></p>
-
   <p><a href="recuperar_senha.html">Esqueci minha senha</a></p>
   <p>Não tem conta? <a href="cadastro.html">Cadastre-se aqui</a></p>
-
   
-
   <script>
     const SUPABASE_URL = "https://qtpmqwsjdsnjufngnsdz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cG1xd3NqZHNuanVmbmduc2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MDkzMjMsImV4cCI6MjA1NTQ4NTMyM30.IM8PxNKULB3f8gwqqL_XZs2x3cNdhnd1pGTjHwLbZzc";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Função que constrói o email completo automaticamente
+    // Constrói o e-mail completo usando o domínio selecionado
     function construirEmail(userInput) {
-      return userInput.trim() + "@policiacivil.sp.gov.br";
+      const dominio = document.getElementById("dominioEmail").value;
+      return userInput.trim() + dominio;
     }
 
     async function login() {
@@ -138,10 +118,8 @@ input:not(.no-global) {
         return;
       }
 
-      // Constrói o email completo
       const email = construirEmail(usuarioInput);
 
-      // Realiza o login via Supabase Auth com signInWithPassword (v2)
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email,
         password: senha
@@ -152,37 +130,33 @@ input:not(.no-global) {
         return;
       }
       
-      // Verifica o status de ativação na tabela "usuarios"
       const { data: perfil, error: perfilError } = await supabaseClient
-  .from('usuarios')
-  .select('autorizado')
-  .eq('id', data.user.id)
-  .maybeSingle();
+          .from('usuarios')
+          .select('autorizado')
+          .eq('id', data.user.id)
+          .maybeSingle();
 
-if (perfilError) {
-  alert("Erro ao verificar ativação: " + perfilError.message);
-  return;
-}
+      if (perfilError) {
+        alert("Erro ao verificar ativação: " + perfilError.message);
+        return;
+      }
 
-if (!perfil) {
-  alert("Sua conta ainda não foi ativada ou não existe um perfil associado.");
-  return;
-}
+      if (!perfil) {
+        alert("Sua conta ainda não foi ativada ou não existe um perfil associado.");
+        return;
+      }
 
-if (!perfil.autorizado) {
-  alert("Sua conta ainda não foi ativada. Aguarde aprovação.");
-  return;
-}
+      if (!perfil.autorizado) {
+        alert("Sua conta ainda não foi ativada. Aguarde aprovação.");
+        return;
+      }
 
-      
       alert("Login bem-sucedido!");
       window.location.href = "index.html";
     }
   </script>
-  
 </body>
 </html>
-
 
 
 
