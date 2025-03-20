@@ -129,6 +129,12 @@
         alert("❌ Usuário não encontrado ou senha incorreta.");
         return;
       }
+
+      // Verifica se o email foi confirmado
+      if (!data.user.email_confirmed_at) {
+      alert("❌ Por favor, confirme seu e-mail para prosseguir.");
+      return;
+      }
       
       const { data: perfil, error: perfilError } = await supabaseClient
           .from('usuarios')

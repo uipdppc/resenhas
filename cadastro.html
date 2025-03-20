@@ -127,7 +127,8 @@
 
       const { data, error } = await supabaseClient.auth.signUp({
         email: email,
-        password: senha
+        password: senha,
+        email_confirm: true
       });
 
       if (error) {
